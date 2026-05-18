@@ -42,7 +42,7 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
           <div className="space-y-3">
             <div className="flex justify-between text-xs font-black">
               <span className="text-zinc-500">Platform commission Rate</span>
-              <span className="text-zinc-900 bg-zinc-50 px-2 py-0.5 rounded">{commissionRate}%</span>
+              <span className="text-primary bg-primary/5 px-2 py-0.5 rounded">{commissionRate}%</span>
             </div>
             <input 
               type="range" 
@@ -50,7 +50,7 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
               max="35" 
               value={commissionRate}
               onChange={e => setCommissionRate(parseInt(e.target.value))}
-              className="w-full h-1.5 bg-zinc-100 rounded-lg appearance-none cursor-pointer accent-zinc-950"
+              className="w-full h-1.5 bg-zinc-100 rounded-lg appearance-none cursor-pointer accent-primary"
             />
             <p className="text-[10px] text-zinc-400 font-semibold">Applies globally to Homestays & Activity checkouts</p>
           </div>
@@ -58,7 +58,7 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
           <div className="space-y-3">
             <div className="flex justify-between text-xs font-black">
               <span className="text-zinc-500">CGST + SGST Combined Split</span>
-              <span className="text-zinc-900 bg-zinc-50 px-2 py-0.5 rounded">{gstRate}%</span>
+              <span className="text-secondary bg-secondary/5 px-2 py-0.5 rounded">{gstRate}%</span>
             </div>
             <input 
               type="range" 
@@ -66,7 +66,7 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
               max="28" 
               value={gstRate}
               onChange={e => setGstRate(parseInt(e.target.value))}
-              className="w-full h-1.5 bg-zinc-100 rounded-lg appearance-none cursor-pointer accent-zinc-950"
+              className="w-full h-1.5 bg-zinc-100 rounded-lg appearance-none cursor-pointer accent-secondary"
             />
             <p className="text-[10px] text-zinc-400 font-semibold">Configured as per central government GST compliance acts</p>
           </div>
@@ -78,13 +78,13 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
             <span className="text-[9px] font-black text-zinc-400 tracking-wider uppercase">Active volume (Total)</span>
             <h4 className="text-lg font-black text-zinc-900">₹{totalFinancialVolume.toLocaleString()}</h4>
           </div>
-          <div className="p-4 bg-zinc-50 rounded-2xl space-y-1">
-            <span className="text-[9px] font-black text-zinc-400 tracking-wider uppercase">Platform gross fee ({commissionRate}%)</span>
-            <h4 className="text-lg font-black text-zinc-900">₹{platformRevenueCalculated.toLocaleString()}</h4>
+          <div className="p-4 bg-zinc-50 rounded-2xl space-y-1 border border-primary/10">
+            <span className="text-[9px] font-black text-primary tracking-wider uppercase">Platform gross fee ({commissionRate}%)</span>
+            <h4 className="text-lg font-black text-primary">₹{platformRevenueCalculated.toLocaleString()}</h4>
           </div>
-          <div className="p-4 bg-zinc-50 rounded-2xl space-y-1">
-            <span className="text-[9px] font-black text-zinc-400 tracking-wider uppercase">GST Compliance Cut ({gstRate}%)</span>
-            <h4 className="text-lg font-black text-zinc-900">₹{gstCalculatedCut.toLocaleString()}</h4>
+          <div className="p-4 bg-zinc-50 rounded-2xl space-y-1 border border-secondary/10">
+            <span className="text-[9px] font-black text-secondary tracking-wider uppercase">GST Compliance Cut ({gstRate}%)</span>
+            <h4 className="text-lg font-black text-secondary">₹{gstCalculatedCut.toLocaleString()}</h4>
           </div>
           <div className="p-4 bg-zinc-50 rounded-2xl space-y-1">
             <span className="text-[9px] font-black text-zinc-400 tracking-wider uppercase">Vendor net split payout</span>
@@ -123,12 +123,12 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
                   <tr key={i} className="hover:bg-zinc-50/50 transition-colors">
                     <td className="py-4 px-4 text-zinc-950 font-extrabold">{v.name}</td>
                     <td className="py-4 px-4">{v.count} bookings (₹{v.gross.toLocaleString()})</td>
-                    <td className="py-4 px-4 text-zinc-950">₹{(v.gross * (commissionRate / 100)).toLocaleString()}</td>
+                    <td className="py-4 px-4 text-primary">₹{(v.gross * (commissionRate / 100)).toLocaleString()}</td>
                     <td className="py-4 px-4 font-black text-emerald-600">₹{v.balance.toLocaleString()}</td>
                     <td className="py-4 px-4 text-right">
                       <button
                         onClick={() => triggerPayoutModal(v.name, v.balance)}
-                        className="px-3 py-1.5 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-white text-[10px] font-black tracking-tight transition-all"
+                        className="px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/90 text-white text-[10px] font-black tracking-tight transition-all shadow-md shadow-secondary/15"
                       >
                         Settle Balance
                       </button>
@@ -202,7 +202,7 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
             <tbody className="divide-y divide-zinc-50 text-xs font-bold text-zinc-700">
               {bookings.map(b => (
                 <tr key={b.id} className="hover:bg-zinc-50/50 transition-colors">
-                  <td className="py-4 px-4 font-mono text-[10px] text-zinc-400">{b.id}</td>
+                  <td className="py-4 px-4"><span className="font-mono text-[10px] text-primary bg-primary/5 px-1.5 py-0.5 rounded">{b.id}</span></td>
                   <td className="py-4 px-4 text-zinc-950 font-extrabold">{b.guestName}</td>
                   <td className="py-4 px-4 text-zinc-700">{b.propertyName}</td>
                   <td className="py-4 px-4 text-zinc-500">{b.hostName}</td>

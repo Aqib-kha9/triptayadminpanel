@@ -22,13 +22,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, pendi
       <div>
         {/* Brand Logo Header */}
         <div className="h-20 flex items-center gap-3 px-6 border-b border-zinc-50">
-          <div className="flex h-11 w-11 items-center justify-center rounded-[16px] bg-zinc-950 text-white shadow-lg shadow-zinc-950/20">
+          <div className="flex h-11 w-11 items-center justify-center rounded-[16px] bg-gradient-to-br from-primary to-rose-500 text-white shadow-lg shadow-primary/30">
             <span className="text-2xl font-black italic">T</span>
           </div>
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-lg font-black tracking-tight text-zinc-900">Triptay</span>
-              <span className="bg-zinc-950/10 text-zinc-950 text-[8px] font-black tracking-tight px-1.5 py-0.5 rounded">Hub</span>
+              <span className="bg-primary/10 text-primary text-[8px] font-black tracking-tight px-1.5 py-0.5 rounded">Hub</span>
             </div>
             <p className="text-[10px] text-zinc-400 font-bold tracking-normal">Operations Control Console</p>
           </div>
@@ -51,8 +51,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, pendi
               onClick={() => setActiveTab(item.id)}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-black tracking-tight transition-all duration-300 ${
                 activeTab === item.id
-                  ? "bg-zinc-950 text-white shadow-lg shadow-zinc-950/10 scale-[1.02]"
-                  : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-950"
+                  ? "bg-gradient-to-r from-primary to-rose-500 text-white shadow-lg shadow-primary/25 scale-[1.02]"
+                  : "text-zinc-500 hover:bg-primary/5 hover:text-primary"
               }`}
             >
               <div className="flex items-center gap-3">
@@ -61,7 +61,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, pendi
               </div>
               {item.badge !== undefined && (
                 <span className={`text-[9px] font-black rounded-full h-5 px-2 flex items-center justify-center min-w-5 ${
-                  activeTab === item.id ? "bg-white text-zinc-950" : "bg-zinc-950 text-white"
+                  activeTab === item.id ? "bg-white text-primary" : "bg-primary text-white"
                 }`}>
                   {item.badge}
                 </span>
@@ -74,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, pendi
       {/* Superadmin Card Profile */}
       <div className="p-4 border-t border-zinc-50 bg-zinc-50/20">
         <div className="flex items-center gap-3 bg-zinc-50 border border-zinc-100 p-3 rounded-2xl">
-          <div className="w-10 h-10 rounded-xl bg-zinc-950 text-white font-black flex items-center justify-center text-sm shadow-md shadow-zinc-950/10">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-rose-500 text-white font-black flex items-center justify-center text-sm shadow-md shadow-primary/20">
             AQ
           </div>
           <div className="overflow-hidden">

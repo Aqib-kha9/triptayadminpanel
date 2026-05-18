@@ -56,9 +56,9 @@ export const ListingsModule: React.FC<ListingsModuleProps> = ({
               key={cat}
               onClick={() => setCategoryFilter(cat)}
               className={cn(
-                "px-3 py-1 text-xs font-bold rounded-lg border",
+                "px-3 py-1 text-xs font-bold rounded-lg border transition-all",
                 categoryFilter === cat 
-                  ? "bg-zinc-950 text-white border-zinc-950" 
+                  ? "bg-gradient-to-r from-primary to-rose-500 text-white border-none shadow-md shadow-primary/10" 
                   : "bg-white text-zinc-500 border-zinc-100 hover:border-zinc-200"
               )}
             >
@@ -88,17 +88,17 @@ export const ListingsModule: React.FC<ListingsModuleProps> = ({
               categoryFilter === "all" || prop.type === categoryFilter
             ).map(prop => (
               <tr key={prop.id} className="hover:bg-zinc-50/50 transition-colors">
-                <td className="py-4 px-4 font-mono text-[10px] text-zinc-400">{prop.id}</td>
+                <td className="py-4 px-4"><span className="font-mono text-[10px] text-primary bg-primary/5 px-1.5 py-0.5 rounded">{prop.id}</span></td>
                 <td className="py-4 px-4 space-y-1">
                   <p className="text-zinc-950 font-extrabold">{prop.title}</p>
                   <p className="text-[10px] text-zinc-400 font-semibold flex items-center gap-1">
-                    <MapPin className="w-3 h-3" /> {prop.location} • Host: {prop.hostName}
+                    <MapPin className="w-3.5 h-3.5 text-zinc-300" /> {prop.location} • Host: {prop.hostName}
                   </p>
                 </td>
                 <td className="py-4 px-4">
                   <span className={cn(
                     "text-[8px] font-black tracking-wider px-2 py-0.5 rounded border uppercase",
-                    prop.type === "Stay" ? "bg-zinc-50 text-zinc-500 border-zinc-100" : "bg-zinc-950 text-white border-zinc-950"
+                    prop.type === "Stay" ? "bg-primary/5 text-primary border-primary/10" : "bg-secondary/5 text-secondary border-secondary/10"
                   )}>
                     {prop.type}
                   </span>
@@ -129,9 +129,9 @@ export const ListingsModule: React.FC<ListingsModuleProps> = ({
                   ₹{prop.price.toLocaleString()}
                 </td>
                 <td className="py-4 px-4">
-                  <div className="flex items-center gap-1 text-zinc-950">
+                  <div className="flex items-center gap-1 text-amber-500">
                     <Star className="w-3.5 h-3.5 fill-current" />
-                    <span className="font-extrabold">{prop.rating}</span>
+                    <span className="font-extrabold text-zinc-950">{prop.rating}</span>
                   </div>
                 </td>
                 <td className="py-4 px-4 text-right">

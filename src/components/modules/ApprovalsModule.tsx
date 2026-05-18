@@ -30,7 +30,7 @@ export const ApprovalsModule: React.FC<ApprovalsModuleProps> = ({
           <h3 className="text-sm font-black text-zinc-900 tracking-tight">Host KYC Applications board</h3>
           <p className="text-xs text-zinc-400 font-semibold">Moderate new vendor requests, verify PAN documents, and gstin registries</p>
         </div>
-        <div className="flex items-center gap-2 border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-2 w-full md:w-auto">
+        <div className="flex items-center gap-2 border border-zinc-100 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/10 transition-all bg-zinc-50 rounded-2xl px-4 py-2 w-full md:w-auto">
           <Search className="w-4 h-4 text-zinc-400" />
           <input 
             type="text" 
@@ -46,7 +46,7 @@ export const ApprovalsModule: React.FC<ApprovalsModuleProps> = ({
         {filteredApps.map(app => (
           <div 
             key={app.id} 
-            className="p-6 rounded-[32px] border border-zinc-100 hover:border-zinc-200 bg-white transition-all space-y-4 relative overflow-hidden"
+            className="p-6 rounded-[32px] border border-zinc-100 hover:border-zinc-200 hover:shadow-lg hover:shadow-primary/5 bg-white transition-all space-y-4 relative overflow-hidden"
           >
             {/* Status Badge */}
             <div className="absolute top-6 right-6">
@@ -63,7 +63,7 @@ export const ApprovalsModule: React.FC<ApprovalsModuleProps> = ({
             <div className="space-y-1 pr-16">
               <div className="flex items-center gap-2">
                 <h4 className="text-xs font-black text-zinc-900 truncate">{app.name}</h4>
-                <span className="text-[8px] font-bold text-zinc-400 font-mono">{app.id}</span>
+                <span className="text-[8px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded font-mono">{app.id}</span>
               </div>
               <p className="text-[10px] text-zinc-400 font-bold">{app.email} • {app.phone}</p>
             </div>
@@ -91,9 +91,9 @@ export const ApprovalsModule: React.FC<ApprovalsModuleProps> = ({
             <div className="pt-2">
               <button
                 onClick={() => setSelectedKycApp(app)}
-                className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 hover:border-zinc-300 transition-colors text-xs font-bold text-zinc-700 text-center flex items-center justify-center gap-1.5"
+                className="w-full px-4 py-2.5 rounded-xl bg-primary hover:bg-primary-hover hover:scale-[1.01] transition-all text-xs font-black text-white text-center flex items-center justify-center gap-1.5 shadow-md shadow-primary/15"
               >
-                <FileText className="w-4 h-4 text-zinc-400" /> Review Application
+                <FileText className="w-4 h-4 text-white" /> Review Application
               </button>
             </div>
           </div>

@@ -24,35 +24,35 @@ export const UsersModule: React.FC<UsersModuleProps> = ({
     <div className="space-y-8">
       {/* Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 transition-all">
+        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 hover:shadow-lg hover:shadow-blue-500/5 transition-all">
           <div className="space-y-2">
-            <p className="text-[10px] font-black text-zinc-400 tracking-normal">Total Registered Users</p>
+            <p className="text-[10px] font-black text-zinc-400 tracking-normal uppercase">Total Registered Users</p>
             <h3 className="text-3xl font-black text-zinc-900">{users.length} Users</h3>
-            <p className="text-[9px] text-emerald-600 font-bold tracking-normal">Dual Mode integrations enabled</p>
+            <p className="text-[9px] text-blue-600 font-bold tracking-normal">Dual Mode integrations enabled</p>
           </div>
-          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
+          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-500">
             <Users className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 transition-all">
+        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 hover:shadow-lg hover:shadow-primary/5 transition-all">
           <div className="space-y-2">
-            <p className="text-[10px] font-black text-zinc-400 tracking-normal">Total Coins & Wallet Credits Issued</p>
+            <p className="text-[10px] font-black text-zinc-400 tracking-normal uppercase">Total Coins & Wallet Credits Issued</p>
             <h3 className="text-3xl font-black text-zinc-900">₹{users.reduce((sum, u) => sum + u.walletBalance, 0).toLocaleString()}</h3>
             <p className="text-[9px] text-primary font-bold tracking-normal">Redeemable in bookings</p>
           </div>
-          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-zinc-950">
-            <Coins className="w-5 h-5 text-zinc-950" />
+          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center text-primary">
+            <Coins className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 transition-all">
+        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 hover:shadow-lg hover:shadow-rose-500/5 transition-all">
           <div className="space-y-2">
-            <p className="text-[10px] font-black text-zinc-400 tracking-normal">Suspended Accounts</p>
+            <p className="text-[10px] font-black text-zinc-400 tracking-normal uppercase">Suspended Accounts</p>
             <h3 className="text-3xl font-black text-zinc-900">{users.filter(u => u.status === "Blocked").length}</h3>
             <p className="text-[9px] text-rose-500 font-bold tracking-normal">Terminated policy violators</p>
           </div>
-          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center">
+          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-500">
             <AlertCircle className="w-5 h-5" />
           </div>
         </div>
@@ -65,7 +65,7 @@ export const UsersModule: React.FC<UsersModuleProps> = ({
             <h3 className="text-sm font-black text-zinc-900">Registered Users Directory</h3>
             <p className="text-xs text-zinc-400 font-semibold">Award loyalty coins, block policy violators, and manage wallet credits</p>
           </div>
-          <div className="flex items-center gap-2 border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-2 w-full md:w-auto">
+          <div className="flex items-center gap-2 border border-zinc-100 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/10 transition-all bg-zinc-50 rounded-2xl px-4 py-2 w-full md:w-auto">
             <Search className="w-4 h-4 text-zinc-400" />
             <input 
               type="text" 
@@ -126,7 +126,7 @@ export const UsersModule: React.FC<UsersModuleProps> = ({
                   <td className="py-4 px-4 text-right space-x-2">
                     <button
                       onClick={() => setSelectedUserForCoins(u)}
-                      className="px-3 py-1.5 rounded-lg bg-zinc-950/5 hover:bg-zinc-950/10 text-zinc-950 text-[10px] font-black tracking-tight"
+                      className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all text-[10px] font-black tracking-tight shadow-sm shadow-primary/5"
                     >
                       Award Coins
                     </button>

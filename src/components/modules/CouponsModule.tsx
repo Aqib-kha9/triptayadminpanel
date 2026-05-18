@@ -67,7 +67,7 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
                 placeholder="e.g. WELCOME200"
                 value={newCouponCode}
                 onChange={e => setNewCouponCode(e.target.value.toUpperCase())}
-                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-zinc-950"
+                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
               />
             </div>
 
@@ -79,7 +79,7 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
                 max="80"
                 value={newCouponDiscount}
                 onChange={e => setNewCouponDiscount(parseInt(e.target.value))}
-                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-zinc-950"
+                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
               />
             </div>
 
@@ -88,7 +88,7 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
               <select 
                 value={newCouponType}
                 onChange={e => setNewCouponType(e.target.value as any)}
-                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-zinc-950"
+                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
               >
                 <option value="Global">Global Platform Offer</option>
                 <option value="Stay-Specific">Stay-Specific Offer</option>
@@ -103,13 +103,13 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
                 placeholder="e.g. The Creek Villa"
                 value={newCouponTarget}
                 onChange={e => setNewCouponTarget(e.target.value)}
-                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-zinc-950"
+                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
               />
             </div>
 
             <button 
               type="submit"
-              className="w-full py-3 rounded-2xl bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-bold tracking-tight shadow-md shadow-zinc-950/10 transition-all flex items-center justify-center gap-1.5"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-primary to-rose-500 hover:opacity-95 text-white text-xs font-bold tracking-tight shadow-md shadow-primary/20 transition-all flex items-center justify-center gap-1.5"
             >
               <Plus className="w-4 h-4" /> Create Coupon
             </button>
@@ -131,16 +131,16 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
                 placeholder="e.g. Special Activity Promo"
                 value={newCampTitle}
                 onChange={e => setNewCampTitle(e.target.value)}
-                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-zinc-950"
+                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
               />
             </div>
 
             <div className="space-y-1">
               <label className="text-[10px] font-black tracking-normal text-zinc-400">Target Audience Group</label>
-              <select
+              <select 
                 value={newCampGroup}
                 onChange={e => setNewCampGroup(e.target.value as any)}
-                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-zinc-950"
+                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
               >
                 <option value="Guests">Traveler Guests Segment</option>
                 <option value="Vendors">Vendor Host Segment</option>
@@ -150,10 +150,10 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
 
             <div className="space-y-1">
               <label className="text-[10px] font-black tracking-normal text-zinc-400">Gateway Channel Dispatcher</label>
-              <select
+              <select 
                 value={newCampChannel}
                 onChange={e => setNewCampChannel(e.target.value as any)}
-                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-zinc-950"
+                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
               >
                 <option value="AWS SES Email">AWS SES Transactional Email</option>
                 <option value="Twilio WhatsApp">Twilio WhatsApp business blast</option>
@@ -163,7 +163,7 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
 
             <button 
               type="submit"
-              className="w-full py-3 rounded-2xl bg-zinc-950 hover:bg-zinc-800 text-white text-xs font-bold tracking-tight shadow-md shadow-zinc-950/10 transition-all flex items-center justify-center gap-1.5"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-secondary to-teal-600 hover:opacity-95 text-white text-xs font-bold tracking-tight shadow-md shadow-secondary/20 transition-all flex items-center justify-center gap-1.5"
             >
               <Send className="w-4 h-4" /> Blast Campaign
             </button>
@@ -190,16 +190,16 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
               >
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="bg-zinc-950 text-white text-[10px] font-mono font-black px-2.5 py-1 rounded-xl tracking-wider">
+                    <span className="bg-gradient-to-r from-primary to-rose-500 text-white text-[10px] font-mono font-black px-2.5 py-1 rounded-xl tracking-wider shadow-sm shadow-primary/10">
                       {cpn.code}
                     </span>
-                    <span className="text-[9px] font-bold text-zinc-400">{cpn.type}</span>
+                    <span className="text-[9px] font-bold text-zinc-500">{cpn.type}</span>
                   </div>
                   <p className="text-[10px] font-black text-zinc-900 truncate max-w-[140px]">{cpn.targetName}</p>
                   <p className="text-[9px] text-zinc-400 font-semibold">Expires: {cpn.expiryDate}</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-xl font-black text-zinc-950">{cpn.discountPercent}%</span>
+                  <span className="text-xl font-black text-primary">{cpn.discountPercent}%</span>
                   <p className="text-[8px] font-bold text-emerald-600">OFF VOUCHER</p>
                 </div>
               </div>

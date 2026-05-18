@@ -38,48 +38,50 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
       {/* Financial & Approvals Bento Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
-        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 transition-all duration-300">
+        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
           <div className="space-y-2">
-            <p className="text-[10px] font-black text-zinc-400 tracking-normal">Gross booking Volume (GMV)</p>
+            <p className="text-[10px] font-black text-zinc-400 tracking-normal uppercase">Gross booking Volume (GMV)</p>
             <h3 className="text-3xl font-black text-zinc-900">₹{totalFinancialVolume.toLocaleString()}</h3>
             <p className="text-[9px] text-emerald-600 font-bold tracking-normal flex items-center gap-1">
               <TrendingUp className="w-3 h-3" /> +12.4% vs last week
             </p>
           </div>
-          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
+          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center text-primary">
             <DollarSign className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 transition-all duration-300">
+        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 hover:shadow-lg hover:shadow-secondary/5 transition-all duration-300">
           <div className="space-y-2">
-            <p className="text-[10px] font-black text-zinc-400 tracking-normal">Platform gross margin ({commissionRate}%)</p>
+            <p className="text-[10px] font-black text-zinc-400 tracking-normal uppercase">Platform gross margin ({commissionRate}%)</p>
             <h3 className="text-3xl font-black text-zinc-900">₹{platformRevenueCalculated.toLocaleString()}</h3>
-            <p className="text-[9px] text-zinc-400 font-bold tracking-normal">GST buffer of {gstRate}% excluded</p>
+            <p className="text-[9px] text-secondary font-bold tracking-normal flex items-center gap-1">
+              <TrendingUp className="w-3 h-3" /> GST buffer of {gstRate}% excluded
+            </p>
           </div>
-          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
+          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-secondary/5 border border-secondary/10 flex items-center justify-center text-secondary">
             <TrendingUp className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 transition-all duration-300">
+        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300">
           <div className="space-y-2">
-            <p className="text-[10px] font-black text-zinc-400 tracking-normal">KYC applications pending</p>
+            <p className="text-[10px] font-black text-zinc-400 tracking-normal uppercase">KYC applications pending</p>
             <h3 className="text-3xl font-black text-zinc-900">{pendingApprovalsCount} Hosts</h3>
             <p className="text-[9px] text-rose-500 font-bold tracking-normal">Needs action within 24 hours</p>
           </div>
-          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
+          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-500">
             <ShieldCheck className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 transition-all duration-300">
+        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300">
           <div className="space-y-2">
-            <p className="text-[10px] font-black text-zinc-400 tracking-normal">Active properties & tours</p>
+            <p className="text-[10px] font-black text-zinc-400 tracking-normal uppercase">Active properties & tours</p>
             <h3 className="text-3xl font-black text-zinc-900">{properties.filter(p => p.status === "Active").length} Listings</h3>
-            <p className="text-[9px] text-emerald-600 font-bold tracking-normal">Dual stays & activity packs live</p>
+            <p className="text-[9px] text-purple-600 font-bold tracking-normal">Dual stays & activity packs live</p>
           </div>
-          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
+          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-500">
             <Building2 className="w-5 h-5" />
           </div>
         </div>
@@ -96,7 +98,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
               <h3 className="text-sm font-black text-zinc-900 tracking-tight">Pending Host Registrations</h3>
               <p className="text-xs text-zinc-400 font-semibold">Review physical KYC identities, gstin registrations, bank mandates</p>
             </div>
-            <span className="text-[10px] font-black text-zinc-400 bg-zinc-50 border border-zinc-100 px-3 py-1.5 rounded-xl">
+            <span className="text-[10px] font-black text-primary bg-primary/5 border border-primary/10 px-3 py-1.5 rounded-xl">
               Urgent Queue
             </span>
           </div>
@@ -107,7 +109,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-black text-zinc-950">{app.name}</span>
-                    <span className="text-[8px] font-black tracking-wider px-2 py-0.5 rounded bg-zinc-100 text-zinc-400 font-mono">
+                    <span className="text-[8px] font-black tracking-wider px-2 py-0.5 rounded bg-primary/10 text-primary font-mono">
                       {app.id}
                     </span>
                   </div>
@@ -117,7 +119,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
                 </div>
                 <button
                   onClick={() => setSelectedKycApp(app)}
-                  className="px-3.5 py-2 rounded-xl bg-zinc-950 text-white hover:bg-zinc-800 transition-all text-[10px] font-black tracking-tight flex items-center gap-1.5 shadow-sm"
+                  className="px-3.5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white transition-all text-[10px] font-black tracking-tight flex items-center gap-1.5 shadow-md shadow-primary/15"
                 >
                   <FileText className="w-3.5 h-3.5" /> Review Application
                 </button>
@@ -145,7 +147,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
                 <p className="text-xs font-black text-zinc-900">Platform base commission</p>
                 <p className="text-[10px] text-zinc-400 font-bold">Configured globally</p>
               </div>
-              <span className="text-sm font-black text-zinc-950 bg-white border border-zinc-100 px-3 py-1 rounded-xl">
+              <span className="text-sm font-black text-primary bg-primary-light border border-primary/10 px-3 py-1 rounded-xl">
                 {commissionRate}%
               </span>
             </div>
@@ -155,7 +157,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
                 <p className="text-xs font-black text-zinc-900">Total User Base size</p>
                 <p className="text-[10px] text-zinc-400 font-bold">Dual mode profiles mapped</p>
               </div>
-              <span className="text-sm font-black text-zinc-900 bg-white border border-zinc-100 px-3 py-1 rounded-xl">
+              <span className="text-sm font-black text-secondary bg-teal-50 border border-secondary/10 px-3 py-1 rounded-xl">
                 {users.length} Users
               </span>
             </div>
