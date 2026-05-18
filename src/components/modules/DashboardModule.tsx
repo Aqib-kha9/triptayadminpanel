@@ -1,0 +1,168 @@
+import React from "react";
+import {
+  Building2,
+  DollarSign,
+  ShieldCheck,
+  TrendingUp,
+  MapPin,
+  FileText
+} from "lucide-react";
+import type { SystemBooking, HostApplication, PlatformUser, Property } from "../../types";
+
+interface DashboardModuleProps {
+  bookings: SystemBooking[];
+  applications: HostApplication[];
+  users: PlatformUser[];
+  properties: Property[];
+  commissionRate: number;
+  gstRate: number;
+  setSelectedKycApp: (app: HostApplication) => void;
+}
+
+export const DashboardModule: React.FC<DashboardModuleProps> = ({
+  bookings,
+  applications,
+  users,
+  properties,
+  commissionRate,
+  gstRate,
+  setSelectedKycApp
+}) => {
+  const activeBookings = bookings.filter(b => b.status !== "Cancelled");
+  const platformRevenueCalculated = activeBookings.reduce((sum, b) => sum + (b.amount * (commissionRate / 100)), 0);
+  const totalFinancialVolume = activeBookings.reduce((sum, b) => sum + b.amount, 0);
+  const pendingApprovalsCount = applications.filter(app => app.status === "Pending").length;
+
+  return (
+    <div className="space-y-8">
+      {/* Financial & Approvals Bento Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 transition-all duration-300">
+          <div className="space-y-2">
+            <p className="text-[10px] font-black text-zinc-400 tracking-normal">Gross booking Volume (GMV)</p>
+            <h3 className="text-3xl font-black text-zinc-900">₹{totalFinancialVolume.toLocaleString()}</h3>
+            <p className="text-[9px] text-emerald-600 font-bold tracking-normal flex items-center gap-1">
+              <TrendingUp className="w-3 h-3" /> +12.4% vs last week
+            </p>
+          </div>
+          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
+            <DollarSign className="w-5 h-5" />
+          </div>
+        </div>
+
+        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 transition-all duration-300">
+          <div className="space-y-2">
+            <p className="text-[10px] font-black text-zinc-400 tracking-normal">Platform gross margin ({commissionRate}%)</p>
+            <h3 className="text-3xl font-black text-zinc-900">₹{platformRevenueCalculated.toLocaleString()}</h3>
+            <p className="text-[9px] text-zinc-400 font-bold tracking-normal">GST buffer of {gstRate}% excluded</p>
+          </div>
+          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
+            <TrendingUp className="w-5 h-5" />
+          </div>
+        </div>
+
+        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 transition-all duration-300">
+          <div className="space-y-2">
+            <p className="text-[10px] font-black text-zinc-400 tracking-normal">KYC applications pending</p>
+            <h3 className="text-3xl font-black text-zinc-900">{pendingApprovalsCount} Hosts</h3>
+            <p className="text-[9px] text-rose-500 font-bold tracking-normal">Needs action within 24 hours</p>
+          </div>
+          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
+            <ShieldCheck className="w-5 h-5" />
+          </div>
+        </div>
+
+        <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 transition-all duration-300">
+          <div className="space-y-2">
+            <p className="text-[10px] font-black text-zinc-400 tracking-normal">Active properties & tours</p>
+            <h3 className="text-3xl font-black text-zinc-900">{properties.filter(p => p.status === "Active").length} Listings</h3>
+            <p className="text-[9px] text-emerald-600 font-bold tracking-normal">Dual stays & activity packs live</p>
+          </div>
+          <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-zinc-50 border border-zinc-100 flex items-center justify-center text-zinc-500">
+            <Building2 className="w-5 h-5" />
+          </div>
+        </div>
+
+      </div>
+
+      {/* Main Core section: Recent host registrations & details */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Pending approvals queue list */}
+        <div className="lg:col-span-2 bg-white border border-zinc-100 shadow-sm rounded-[36px] p-6 space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-zinc-50">
+            <div>
+              <h3 className="text-sm font-black text-zinc-900 tracking-tight">Pending Host Registrations</h3>
+              <p className="text-xs text-zinc-400 font-semibold">Review physical KYC identities, gstin registrations, bank mandates</p>
+            </div>
+            <span className="text-[10px] font-black text-zinc-400 bg-zinc-50 border border-zinc-100 px-3 py-1.5 rounded-xl">
+              Urgent Queue
+            </span>
+          </div>
+
+          <div className="divide-y divide-zinc-50">
+            {applications.filter(app => app.status === "Pending").map(app => (
+              <div key={app.id} className="py-4 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-zinc-950">{app.name}</span>
+                    <span className="text-[8px] font-black tracking-wider px-2 py-0.5 rounded bg-zinc-100 text-zinc-400 font-mono">
+                      {app.id}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-zinc-400 font-bold tracking-normal flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-zinc-300" /> {app.property} ({app.location})
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedKycApp(app)}
+                  className="px-3.5 py-2 rounded-xl bg-zinc-950 text-white hover:bg-zinc-800 transition-all text-[10px] font-black tracking-tight flex items-center gap-1.5 shadow-sm"
+                >
+                  <FileText className="w-3.5 h-3.5" /> Review Application
+                </button>
+              </div>
+            ))}
+
+            {pendingApprovalsCount === 0 && (
+              <div className="py-8 text-center space-y-2">
+                <p className="text-xs font-bold text-zinc-400">All caught up! Zero pending host operations applications.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Operations panel */}
+        <div className="bg-white border border-zinc-100 shadow-sm rounded-[36px] p-6 space-y-6">
+          <div>
+            <h3 className="text-sm font-black text-zinc-900 tracking-tight">Operations Quick Actions</h3>
+            <p className="text-xs text-zinc-400 font-semibold">One-click administrative telemetry adjustments</p>
+          </div>
+
+          <div className="space-y-3">
+            <div className="p-4 bg-zinc-50 border border-zinc-100 rounded-2xl flex items-center justify-between">
+              <div>
+                <p className="text-xs font-black text-zinc-900">Platform base commission</p>
+                <p className="text-[10px] text-zinc-400 font-bold">Configured globally</p>
+              </div>
+              <span className="text-sm font-black text-zinc-950 bg-white border border-zinc-100 px-3 py-1 rounded-xl">
+                {commissionRate}%
+              </span>
+            </div>
+
+            <div className="p-4 bg-zinc-50 border border-zinc-100 rounded-2xl flex items-center justify-between">
+              <div>
+                <p className="text-xs font-black text-zinc-900">Total User Base size</p>
+                <p className="text-[10px] text-zinc-400 font-bold">Dual mode profiles mapped</p>
+              </div>
+              <span className="text-sm font-black text-zinc-900 bg-white border border-zinc-100 px-3 py-1 rounded-xl">
+                {users.length} Users
+              </span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+};
