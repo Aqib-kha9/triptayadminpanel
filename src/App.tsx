@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 
 // Auth
@@ -21,6 +22,7 @@ import StaysPage from "./pages/StaysPage";
 import StayDetailPage from "./pages/StayDetailPage";
 import ActivitiesPage from "./pages/ActivitiesPage";
 import ActivityDetailPage from "./pages/ActivityDetailPage";
+import TestimonialsPage from "./pages/TestimonialsPage";
 import FinancialsPage from "./pages/FinancialsPage";
 import DisputesPage from "./pages/DisputesPage";
 import ChatsPage from "./pages/ChatsPage";
@@ -56,6 +58,8 @@ function AdminLayout() {
     selectedUserForEdit, setSelectedUserForEdit, handleSaveUser,
   } = useAdmin();
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="flex h-screen bg-zinc-50 overflow-hidden font-sans">
       {/* ================= SIDEBAR NAVIGATION ================= */}
@@ -63,15 +67,20 @@ function AdminLayout() {
         pendingApprovalsCount={pendingApprovalsCount}
         pendingDisputesCount={pendingDisputesCount}
         unreadChatsCount={unreadChatsCount}
+        mobileOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
 
       {/* ================= MAIN CONTAINER SYSTEM ================= */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Operations Header */}
-        <Header setAudits={setAudits} />
+        <Header
+          setAudits={setAudits}
+          onMenuToggle={() => setSidebarOpen(prev => !prev)}
+        />
 
         {/* Page Content */}
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           <Routes>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/approvals" element={<ApprovalsPage />} />
@@ -81,6 +90,7 @@ function AdminLayout() {
             <Route path="/stays" element={<StaysPage />} />
             <Route path="/activities/:activityId" element={<ActivityDetailPage />} />
             <Route path="/activities" element={<ActivitiesPage />} />
+            <Route path="/testimonials" element={<TestimonialsPage />} />
             <Route path="/financials" element={<FinancialsPage />} />
             <Route path="/disputes" element={<DisputesPage />} />
             <Route path="/chats" element={<ChatsPage />} />

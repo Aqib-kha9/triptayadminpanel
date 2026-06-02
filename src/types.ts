@@ -137,3 +137,15 @@ export interface ChatRoom {
   unreadCount: number;
   messages: ChatMessage[];
 }
+
+export interface Testimonial {
+  _id: string;
+  name: string;
+  role: string;
+  text: string;
+  image: string;
+  order: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
