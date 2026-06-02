@@ -27,7 +27,7 @@ import type { AuditLog } from "../../types";
 
 // ──────────────────────── Constants ────────────────────────
 
-const API_BASE = ""; // Vite proxy forwards /api → backend
+const API_BASE = import.meta.env.VITE_API_URL || "";
 const PAGE_SIZE = 10;
 
 const STATUS_TABS = [

@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_BASE = "";
+const API_BASE = import.meta.env.VITE_API_URL || "";
 const PAGE_SIZE = 10;
 
 // ── Types ──
