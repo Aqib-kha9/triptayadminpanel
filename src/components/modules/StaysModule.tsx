@@ -20,10 +20,6 @@ import {
   CheckCircle,
   FileText,
   XCircle,
-  Wifi,
-  Car,
-  Utensils,
-  Waves,
   Filter,
   X,
 } from "lucide-react";
