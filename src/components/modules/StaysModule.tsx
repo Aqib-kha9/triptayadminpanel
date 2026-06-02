@@ -5,7 +5,6 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
-  ChevronDown,
   Home,
   MapPin,
   Star,
@@ -87,29 +86,10 @@ const STATUS_TABS = [
   { key: "rejected", label: "Rejected" },
 ] as const;
 
-const AMENITY_ICONS: Record<string, React.ReactNode> = {
-  wifi: <Wifi className="w-3 h-3" />,
-  parking: <Car className="w-3 h-3" />,
-  pool: <Waves className="w-3 h-3" />,
-  breakfast: <Utensils className="w-3 h-3" />,
-};
-
 function getCoverUrl(item: ListingItem): string | null {
   if (!item.media?.length) return null;
   const cover = item.media.find((m) => m.isCover);
   return cover?.url || item.media[0]?.url || null;
-}
-
-function formatPrice(n: number): string {
-  return `₹${n.toLocaleString("en-IN")}`;
-}
-
-function formatDate(d: string): string {
-  return new Date(d).toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
 }
 
 function getStatusBadgeClass(status: string, isActive: boolean): string {
@@ -195,7 +175,7 @@ export const StaysModule: React.FC<StaysModuleProps> = ({ setAudits }) => {
   // ── Debounced Search ──
   const handleSearchChange = (val: string) => {
     setSearch(val);
-    clearTimeout(searchTimeout.current);
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(() => {
       setPage(1);
       // fetchListings picks up via the dependency change

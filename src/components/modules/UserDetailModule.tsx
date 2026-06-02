@@ -2,9 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
     ArrowLeft,
-    Users,
-    Mail,
-    Phone,
     Calendar,
     Shield,
     Wallet,
@@ -17,7 +14,6 @@ import {
     Clock,
     AlertTriangle,
     Loader2,
-    RefreshCw,
     Building2,
     CreditCard,
     Landmark,

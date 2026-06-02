@@ -12,10 +12,8 @@ import {
   IndianRupee,
   Loader2,
   AlertTriangle,
-  RefreshCw,
   ShieldOff,
   ShieldCheck,
-  Eye,
   EyeOff,
   FileText,
   XCircle,
@@ -23,14 +21,11 @@ import {
   Clock,
   Wifi,
   Car,
-  Utensils,
   Waves,
   Tv,
   Wind,
   Dog,
   UtensilsCrossed,
-  Calendar,
-  Image as ImageIcon,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -320,10 +315,10 @@ export const StayDetailModule: React.FC<StayDetailModuleProps> = ({ setAudits })
       setListing((prev) =>
         prev
           ? {
-              ...prev,
-              isActive: action === "activate",
-              status: action === "suspend" ? "unlisted" : "published",
-            }
+            ...prev,
+            isActive: action === "activate",
+            status: action === "suspend" ? "unlisted" : "published",
+          }
           : prev
       );
 
@@ -700,9 +695,8 @@ export const StayDetailModule: React.FC<StayDetailModuleProps> = ({ setAudits })
                   <button
                     key={idx}
                     onClick={() => setCurrentMediaIndex(idx)}
-                    className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
-                      idx === currentMediaIndex ? "border-primary ring-2 ring-primary/20" : "border-zinc-100 opacity-60 hover:opacity-100"
-                    }`}
+                    className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${idx === currentMediaIndex ? "border-primary ring-2 ring-primary/20" : "border-zinc-100 opacity-60 hover:opacity-100"
+                      }`}
                   >
                     <img src={m.url} alt="" className="w-full h-full object-cover" />
                     {m.isCover && (
@@ -787,11 +781,10 @@ export const StayDetailModule: React.FC<StayDetailModuleProps> = ({ setAudits })
               <button
                 onClick={handleToggleActive}
                 disabled={actionLoading === "suspend" || actionLoading === "activate"}
-                className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wide transition-all border ${
-                  listing.isActive
+                className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wide transition-all border ${listing.isActive
                     ? "bg-red-50 text-red-600 border-red-100 hover:bg-red-100"
                     : "bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100"
-                } disabled:opacity-50`}
+                  } disabled:opacity-50`}
               >
                 {actionLoading === "suspend" || actionLoading === "activate" ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />

@@ -104,7 +104,7 @@ export const UsersModule: React.FC<UsersModuleProps> = ({ setAudits }) => {
   // State
   const [users, setUsers] = useState<UserItem[]>([]);
   const [meta, setMeta] = useState<PaginationMeta>({ page: 1, totalPages: 0, total: 0, results: 0 });
-  const [stats, setStats] = useState({ totalUsers: 0, totalBlocked: 0, totalWalletBalance: 0 });
+  const [_stats, set_stats] = useState({ totalUsers: 0, totalBlocked: 0, totalWalletBalance: 0 });
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [page, setPage] = useState(1);
@@ -148,7 +148,7 @@ export const UsersModule: React.FC<UsersModuleProps> = ({ setAudits }) => {
       });
       // Compute stats from server response or fall back to client-side
       if (json.stats) {
-        setStats(json.stats);
+        set_stats(json.stats);
       }
     } catch (err: any) {
       setError(err.message || "Failed to load users.");
@@ -380,11 +380,10 @@ export const UsersModule: React.FC<UsersModuleProps> = ({ setAudits }) => {
                 setRoleFilter(tab.key);
                 setPage(1);
               }}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-black tracking-wide uppercase transition-all ${
-                roleFilter === tab.key
+              className={`px-3 py-1.5 rounded-lg text-[10px] font-black tracking-wide uppercase transition-all ${roleFilter === tab.key
                   ? "bg-zinc-900 text-white shadow-sm"
                   : "text-zinc-400 hover:text-zinc-700 hover:bg-zinc-50"
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -534,11 +533,10 @@ export const UsersModule: React.FC<UsersModuleProps> = ({ setAudits }) => {
                             <button
                               onClick={() => handleToggleStatus(item)}
                               disabled={togglingId === item._id}
-                              className={`p-2 rounded-lg border transition-all disabled:opacity-50 ${
-                                item.status === "Active"
+                              className={`p-2 rounded-lg border transition-all disabled:opacity-50 ${item.status === "Active"
                                   ? "bg-rose-50 border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white"
                                   : "bg-emerald-50 border-emerald-100 text-emerald-500 hover:bg-emerald-500 hover:text-white"
-                              }`}
+                                }`}
                               title={item.status === "Active" ? "Block user" : "Unblock user"}
                             >
                               {togglingId === item._id ? (
@@ -579,11 +577,10 @@ export const UsersModule: React.FC<UsersModuleProps> = ({ setAudits }) => {
                       <button
                         key={p}
                         onClick={() => setPage(p)}
-                        className={`w-8 h-8 rounded-lg text-[10px] font-black transition-all ${
-                          p === meta.page
+                        className={`w-8 h-8 rounded-lg text-[10px] font-black transition-all ${p === meta.page
                             ? "bg-zinc-900 text-white shadow-sm"
                             : "text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
-                        }`}
+                          }`}
                       >
                         {p}
                       </button>

@@ -254,7 +254,7 @@ export const AttractionsModule: React.FC<AttractionsModuleProps> = ({ setAudits 
         cancelEdit();
       } else {
         // Create
-        const res = await apiFetch<{ status: string; data: { destination: any } }>(
+        await apiFetch<{ status: string; data: { destination: any } }>(
           "/destinations",
           {
             method: "POST",
@@ -383,8 +383,8 @@ export const AttractionsModule: React.FC<AttractionsModuleProps> = ({ setAudits 
             key={p}
             onClick={() => fetchDestinations(p)}
             className={`w-9 h-9 rounded-xl text-xs font-black transition ${p === pagination.page
-                ? "bg-zinc-950 text-white shadow-sm"
-                : "hover:bg-zinc-100 text-zinc-500"
+              ? "bg-zinc-950 text-white shadow-sm"
+              : "hover:bg-zinc-100 text-zinc-500"
               }`}
           >
             {p}
@@ -762,8 +762,8 @@ export const AttractionsModule: React.FC<AttractionsModuleProps> = ({ setAudits 
                         <td className="py-4 px-5">
                           <span
                             className={`inline-flex items-center gap-1 text-[9px] font-black tracking-wider px-2.5 py-1 rounded-lg border ${dest.isActive
-                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                : "bg-zinc-100 text-zinc-400 border-zinc-200"
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                              : "bg-zinc-100 text-zinc-400 border-zinc-200"
                               }`}
                           >
                             {dest.isActive ? (

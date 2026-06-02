@@ -9,10 +9,8 @@ import {
     IndianRupee,
     Loader2,
     AlertTriangle,
-    RefreshCw,
     ShieldOff,
     ShieldCheck,
-    Eye,
     EyeOff,
     FileText,
     XCircle,
@@ -21,7 +19,6 @@ import {
     Dumbbell,
     Compass,
     Calendar,
-    Image as ImageIcon,
     ChevronLeft,
     ChevronRight,
     Shield,
@@ -902,8 +899,8 @@ export const ActivityDetailModule: React.FC<ActivityDetailModuleProps> = ({ setA
                                 onClick={handleToggleActive}
                                 disabled={actionLoading === "suspend" || actionLoading === "activate"}
                                 className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wide transition-all border ${activity.isActive
-                                        ? "bg-red-50 text-red-600 border-red-100 hover:bg-red-100"
-                                        : "bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100"
+                                    ? "bg-red-50 text-red-600 border-red-100 hover:bg-red-100"
+                                    : "bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100"
                                     } disabled:opacity-50`}
                             >
                                 {actionLoading === "suspend" || actionLoading === "activate" ? (

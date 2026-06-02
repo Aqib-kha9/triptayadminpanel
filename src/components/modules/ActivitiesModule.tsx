@@ -198,7 +198,7 @@ export const ActivitiesModule: React.FC<ActivitiesModuleProps> = ({ setAudits })
     // ── Debounced Search ──
     const handleSearchChange = (val: string) => {
         setSearch(val);
-        clearTimeout(searchTimeout.current);
+        if (searchTimeout.current) clearTimeout(searchTimeout.current);
         searchTimeout.current = setTimeout(() => {
             setPage(1);
         }, 400);

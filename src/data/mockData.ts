@@ -91,70 +91,76 @@ export const INITIAL_USERS: PlatformUser[] = [
 
 export const INITIAL_APPLICATIONS: HostApplication[] = [
   {
+    _id: "app-9012",
     id: "APP-9012",
     name: "Aryan Singh",
     email: "aryan.singh@example.com",
     phone: "+91 98765 43210",
-    property: "The Creek Villa: A Riverside Sanctuary",
-    location: "Manali, HP",
-    type: "Stay",
+    role: "Vendor",
     submittedDate: "Today, 04:30 AM",
     status: "Pending",
-    priceExpected: 4500,
     panNumber: "ABCDE1234F",
     gstin: "02ABCDE1234F1Z4",
     bankAccount: "987654321098 (State Bank of India)",
-    bankIFSC: "SBIN0001234"
+    bankIFSC: "SBIN0001234",
+    aadharFront: null,
+    aadharBack: null,
+    panCardImage: null,
+    kycStatus: "Pending",
   },
   {
+    _id: "app-9011",
     id: "APP-9011",
     name: "Sneha Reddy",
     email: "sneha.r@example.com",
     phone: "+91 88877 66554",
-    property: "Mountain View Cottage",
-    location: "Rishikesh, UK",
-    type: "Stay",
+    role: "Vendor",
     submittedDate: "Yesterday",
     status: "Pending",
-    priceExpected: 3200,
     panNumber: "WXYZP9876Q",
     gstin: "05WXYZP9876Q1Z3",
     bankAccount: "554433221100 (HDFC Bank)",
-    bankIFSC: "HDFC0000888"
+    bankIFSC: "HDFC0000888",
+    aadharFront: null,
+    aadharBack: null,
+    panCardImage: null,
+    kycStatus: "Pending",
   },
   {
+    _id: "app-9010",
     id: "APP-9010",
     name: "Rakesh Negi",
     email: "rakesh.negi@example.com",
     phone: "+91 99887 76655",
-    property: "Ganga River Rafting Adventure",
-    location: "Rishikesh, UK",
-    type: "Activity",
-    category: "Adventure",
+    role: "Vendor",
     submittedDate: "16 May, 2026",
     status: "Approved",
-    priceExpected: 1200,
     panNumber: "KLMNP5544R",
     gstin: "05KLMNP5544R1Z2",
     bankAccount: "112233445566 (ICICI Bank)",
-    bankIFSC: "ICIC0000104"
+    bankIFSC: "ICIC0000104",
+    aadharFront: null,
+    aadharBack: null,
+    panCardImage: null,
+    kycStatus: "Approved",
   },
   {
+    _id: "app-9009",
     id: "APP-9009",
     name: "Vikram Rathore",
     email: "vikram.r@example.com",
     phone: "+91 88776 65544",
-    property: "Jodhpur Desert Jeeping Adventure",
-    location: "Jodhpur, RJ",
-    type: "Activity",
-    category: "Adventure",
+    role: "Vendor",
     submittedDate: "12 May, 2026",
     status: "Rejected",
-    priceExpected: 800,
     panNumber: "EPVPN1123P",
     gstin: "08EPVPN1123P1Z5",
     bankAccount: "123456789012 (Punjab National Bank)",
-    bankIFSC: "PUNB0012345"
+    bankIFSC: "PUNB0012345",
+    aadharFront: null,
+    aadharBack: null,
+    panCardImage: null,
+    kycStatus: "Rejected",
   }
 ];
 
@@ -187,9 +193,9 @@ export const INITIAL_CAMPAIGNS: Campaign[] = [
 ];
 
 export const INITIAL_ATTRACTIONS: TouristAttraction[] = [
-  { id: "ATR-01", name: "Solang Valley Snow Point", location: "Manali, HP", coordinates: "32.3167° N, 77.1500° E", nearbyStaysCount: 8, category: "Adventure" },
-  { id: "ATR-02", name: "Triveni Ghat Evening Aarti", location: "Rishikesh, UK", coordinates: "30.1264° N, 78.3011° E", nearbyStaysCount: 12, category: "Spiritual" },
-  { id: "ATR-03", name: "Alleppey Houseboat Terminal", location: "Alleppey, KL", coordinates: "9.4981° N, 76.3388° E", nearbyStaysCount: 5, category: "Nature" }
+  { _id: "atr-01", id: "ATR-01", name: "Solang Valley Snow Point", slug: "solang-valley", state: "Himachal Pradesh", city: "Manali", image: "", lat: 32.3167, lng: 77.15, coordinates: "32.3167° N, 77.1500° E", description: "", isActive: true, popularityScore: 95, nearbyStaysCount: 8, category: "Adventure" },
+  { _id: "atr-02", id: "ATR-02", name: "Triveni Ghat Evening Aarti", slug: "triveni-ghat", state: "Uttarakhand", city: "Rishikesh", image: "", lat: 30.1264, lng: 78.3011, coordinates: "30.1264° N, 78.3011° E", description: "", isActive: true, popularityScore: 90, nearbyStaysCount: 12, category: "Spiritual" },
+  { _id: "atr-03", id: "ATR-03", name: "Alleppey Houseboat Terminal", slug: "alleppey-houseboat", state: "Kerala", city: "Alleppey", image: "", lat: 9.4981, lng: 76.3388, coordinates: "9.4981° N, 76.3388° E", description: "", isActive: true, popularityScore: 88, nearbyStaysCount: 5, category: "Nature" }
 ];
 
 export const INITIAL_AUDITS: AuditLog[] = [
