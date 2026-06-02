@@ -7,24 +7,30 @@ export interface PlatformUser {
   status: "Active" | "Blocked";
   walletBalance: number;
   joinedDate: string;
+  panNumber?: string;
+  gstin?: string;
+  bankAccount?: string;
+  bankIFSC?: string;
+  kycStatus?: "Pending" | "Approved" | "Rejected" | "Not Submitted";
 }
 
 export interface HostApplication {
+  _id: string;
   id: string;
   name: string;
   email: string;
   phone: string;
-  property: string;
-  location: string;
-  type: "Stay" | "Activity";
-  category?: string; // Adventure, Trekking, Farming, Experiences
-  submittedDate: string;
-  status: "Pending" | "Approved" | "Rejected";
-  priceExpected: number;
+  role: "Vendor" | "Dual Mode" | "Guest";
   panNumber: string;
   gstin: string;
   bankAccount: string;
   bankIFSC: string;
+  aadharFront: string | null;
+  aadharBack: string | null;
+  panCardImage: string | null;
+  kycStatus: "Pending" | "Approved" | "Rejected" | "Not Submitted";
+  status: "Pending" | "Approved" | "Rejected";
+  submittedDate: string;
 }
 
 export interface Property {
@@ -77,12 +83,23 @@ export interface Campaign {
 }
 
 export interface TouristAttraction {
+  _id: string;
   id: string;
   name: string;
-  location: string;
+  slug: string;
+  state: string;
+  city: string;
+  image: string;
   coordinates: string;
-  nearbyStaysCount: number;
+  lat: number;
+  lng: number;
   category: "Nature" | "Adventure" | "Historical" | "Spiritual";
+  description: string;
+  isActive: boolean;
+  popularityScore: number;
+  nearbyStaysCount: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AuditLog {
@@ -91,4 +108,32 @@ export interface AuditLog {
   type: "Webhook" | "SQS Queue" | "Security" | "System";
   event: string;
   status: "Success" | "Failed" | "Blocked";
+}
+
+export interface DisputeTicket {
+  id: string;
+  bookingId: string;
+  guestName: string;
+  hostName: string;
+  issue: string;
+  amount: number;
+  status: "Pending" | "Resolved-Refunded" | "Resolved-PaidVendor";
+  createdAt: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  sender: "Guest" | "Host" | "Admin";
+  text: string;
+  timestamp: string;
+}
+
+export interface ChatRoom {
+  id: string;
+  guestName: string;
+  hostName: string;
+  propertyName: string;
+  lastMessage: string;
+  unreadCount: number;
+  messages: ChatMessage[];
 }

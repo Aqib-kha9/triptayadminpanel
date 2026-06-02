@@ -1,4 +1,5 @@
 import React from "react";
+import { Download, Receipt } from "lucide-react";
 import type { SystemBooking } from "../../types";
 
 interface FinancialsModuleProps {
@@ -9,6 +10,7 @@ interface FinancialsModuleProps {
   setGstRate: (rate: number) => void;
   triggerPayoutModal: (vendorName: string, balance: number) => void;
   handleCancelAndRefundBooking: (bookingId: string) => void;
+  setSelectedInvoiceBooking: (booking: SystemBooking | null) => void;
 }
 
 export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
@@ -18,8 +20,24 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
   gstRate,
   setGstRate,
   triggerPayoutModal,
-  handleCancelAndRefundBooking
+  handleCancelAndRefundBooking,
+  setSelectedInvoiceBooking
 }) => {
+  const handleExportCSV = () => {
+    const headers = "Booking ID,Guest Name,Property/Experience,Host Name,Amount,Date,Status\n";
+    const rows = bookings.map(b => 
+      `"${b.id}","${b.guestName}","${b.propertyName}","${b.hostName}",${b.amount},"${b.date}","${b.status}"`
+    ).join("\n");
+    const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `triptay_ledger_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
   // Helper for conditional classes
   const cn = (...classes: any[]) => classes.filter(Boolean).join(" ");
 
@@ -180,9 +198,17 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
 
       {/* Recent Bookings & Refund Directory */}
       <div className="bg-white border border-zinc-100 shadow-sm rounded-[36px] p-6 space-y-6">
-        <div>
-          <h3 className="text-sm font-black text-zinc-900 tracking-tight">Recent System Bookings & Direct Refunds</h3>
-          <p className="text-xs text-zinc-400 font-semibold">Track stays/tours bookings, handle direct cancellations, and issue immediate wallet cashbacks / refunds</p>
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+          <div>
+            <h3 className="text-sm font-black text-zinc-900 tracking-tight">Recent System Bookings & Direct Refunds</h3>
+            <p className="text-xs text-zinc-400 font-semibold">Track stays/tours bookings, handle direct cancellations, and issue immediate wallet cashbacks / refunds</p>
+          </div>
+          <button
+            onClick={handleExportCSV}
+            className="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-black tracking-tight flex items-center gap-1.5 transition-all self-start sm:self-auto active:scale-[0.98]"
+          >
+            <Download className="w-3.5 h-3.5" /> Export to CSV
+          </button>
         </div>
 
         <div className="overflow-x-auto">
@@ -196,7 +222,7 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
                 <th className="py-4 px-4">Transaction Value</th>
                 <th className="py-4 px-4">Date & Time</th>
                 <th className="py-4 px-4">Status</th>
-                <th className="py-4 px-4 text-right">Moderation action</th>
+                <th className="py-4 px-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-50 text-xs font-bold text-zinc-700">
@@ -219,16 +245,24 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
                     </span>
                   </td>
                   <td className="py-4 px-4 text-right">
-                    {b.status !== "Cancelled" ? (
+                    <div className="flex items-center justify-end gap-2">
                       <button
-                        onClick={() => handleCancelAndRefundBooking(b.id)}
-                        className="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-500 hover:text-white border border-rose-100 transition-all text-rose-500 text-[10px] font-black tracking-tight"
+                        onClick={() => setSelectedInvoiceBooking(b)}
+                        className="px-2.5 py-1.5 rounded-lg bg-zinc-50 hover:bg-zinc-100 border border-zinc-100 transition-all text-zinc-600 text-[10px] font-black tracking-tight flex items-center gap-1"
                       >
-                        Cancel & Refund
+                        <Receipt className="w-3.5 h-3.5" /> Invoice
                       </button>
-                    ) : (
-                      <span className="text-zinc-400 italic text-[10px] font-semibold">Refund Credited ✓</span>
-                    )}
+                      {b.status !== "Cancelled" ? (
+                        <button
+                          onClick={() => handleCancelAndRefundBooking(b.id)}
+                          className="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-500 hover:text-white border border-rose-100 transition-all text-rose-500 text-[10px] font-black tracking-tight"
+                        >
+                          Cancel & Refund
+                        </button>
+                      ) : (
+                        <span className="text-zinc-400 italic text-[10px] font-semibold px-2">Refunded ✓</span>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

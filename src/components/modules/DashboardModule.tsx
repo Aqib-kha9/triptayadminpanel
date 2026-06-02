@@ -37,7 +37,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
     <div className="space-y-8">
       {/* Financial & Approvals Bento Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        
+
         <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
           <div className="space-y-2">
             <p className="text-[10px] font-black text-zinc-400 tracking-normal uppercase">Gross booking Volume (GMV)</p>
@@ -90,7 +90,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
 
       {/* Main Core section: Recent host registrations & details */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
+
         {/* Pending approvals queue list */}
         <div className="lg:col-span-2 bg-white border border-zinc-100 shadow-sm rounded-[36px] p-6 space-y-6">
           <div className="flex items-center justify-between pb-4 border-b border-zinc-50">
@@ -104,27 +104,30 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
           </div>
 
           <div className="divide-y divide-zinc-50">
-            {applications.filter(app => app.status === "Pending").map(app => (
-              <div key={app.id} className="py-4 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-black text-zinc-950">{app.name}</span>
-                    <span className="text-[8px] font-black tracking-wider px-2 py-0.5 rounded bg-primary/10 text-primary font-mono">
-                      {app.id}
-                    </span>
+            {applications.filter(app => app.status === "Pending").map(app => {
+              const appKey = app._id || app.id;
+              return (
+                <div key={appKey} className="py-4 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
+                  <div className="space-y-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-black text-zinc-950 truncate">{app.name}</span>
+                      <span className="text-[8px] font-black tracking-wider px-2 py-0.5 rounded bg-primary/10 text-primary font-mono">
+                        {app.role}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-zinc-400 font-bold tracking-normal flex items-center gap-1 truncate">
+                      <MapPin className="w-3.5 h-3.5 text-zinc-300 flex-shrink-0" /> {app.email} • PAN: {app.panNumber || "—"}
+                    </p>
                   </div>
-                  <p className="text-[11px] text-zinc-400 font-bold tracking-normal flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-zinc-300" /> {app.property} ({app.location})
-                  </p>
+                  <button
+                    onClick={() => setSelectedKycApp(app)}
+                    className="px-3.5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white transition-all text-[10px] font-black tracking-tight flex items-center gap-1.5 shadow-md shadow-primary/15 flex-shrink-0"
+                  >
+                    <FileText className="w-3.5 h-3.5" /> Review
+                  </button>
                 </div>
-                <button
-                  onClick={() => setSelectedKycApp(app)}
-                  className="px-3.5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white transition-all text-[10px] font-black tracking-tight flex items-center gap-1.5 shadow-md shadow-primary/15"
-                >
-                  <FileText className="w-3.5 h-3.5" /> Review Application
-                </button>
-              </div>
-            ))}
+              );
+            })}
 
             {pendingApprovalsCount === 0 && (
               <div className="py-8 text-center space-y-2">

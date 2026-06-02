@@ -6,15 +6,87 @@ import type {
   Coupon,
   Campaign,
   TouristAttraction,
-  AuditLog
+  AuditLog,
+  DisputeTicket,
+  ChatRoom
 } from "../types";
 
 export const INITIAL_USERS: PlatformUser[] = [
-  { id: "USR-001", name: "Meera Kapoor", email: "meera.k@example.com", phone: "+91 98123 45678", role: "Dual Mode", status: "Active", walletBalance: 4500, joinedDate: "12 January, 2026" },
-  { id: "USR-002", name: "Anuj Sharma", email: "anuj.sharma@example.com", phone: "+91 99112 23344", role: "Guest", status: "Active", walletBalance: 1200, joinedDate: "05 February, 2026" },
-  { id: "USR-003", name: "Karan Singh", email: "karan.singh@example.com", phone: "+91 98765 12345", role: "Vendor", status: "Active", walletBalance: 0, joinedDate: "15 May, 2026" },
-  { id: "USR-004", name: "Kabir Roy", email: "kabir.roy@example.com", phone: "+91 90909 09090", role: "Guest", status: "Blocked", walletBalance: 250, joinedDate: "10 March, 2026" },
-  { id: "USR-005", name: "Sneha Reddy", email: "sneha.r@example.com", phone: "+91 88877 66554", role: "Dual Mode", status: "Active", walletBalance: 8000, joinedDate: "01 April, 2026" }
+  { 
+    id: "USR-001", 
+    name: "Meera Kapoor", 
+    email: "meera.k@example.com", 
+    phone: "+91 98123 45678", 
+    role: "Dual Mode", 
+    status: "Active", 
+    walletBalance: 4500, 
+    joinedDate: "12 January, 2026",
+    panNumber: "ABCDE1234F",
+    gstin: "02ABCDE1234F1Z4",
+    bankAccount: "987654321098 (State Bank of India)",
+    bankIFSC: "SBIN0001234",
+    kycStatus: "Approved"
+  },
+  { 
+    id: "USR-002", 
+    name: "Anuj Sharma", 
+    email: "anuj.sharma@example.com", 
+    phone: "+91 99112 23344", 
+    role: "Guest", 
+    status: "Active", 
+    walletBalance: 1200, 
+    joinedDate: "05 February, 2026",
+    panNumber: "PQRST5678A",
+    gstin: "07PQRST5678A2Z1",
+    bankAccount: "112233445566 (HDFC Bank)",
+    bankIFSC: "HDFC0000240",
+    kycStatus: "Approved"
+  },
+  { 
+    id: "USR-003", 
+    name: "Karan Singh", 
+    email: "karan.singh@example.com", 
+    phone: "+91 98765 12345", 
+    role: "Vendor", 
+    status: "Active", 
+    walletBalance: 0, 
+    joinedDate: "15 May, 2026",
+    panNumber: "EPVPN1123P",
+    gstin: "08EPVPN1123P1Z5",
+    bankAccount: "123456789012 (Punjab National Bank)",
+    bankIFSC: "PUNB0012345",
+    kycStatus: "Approved"
+  },
+  { 
+    id: "USR-004", 
+    name: "Kabir Roy", 
+    email: "kabir.roy@example.com", 
+    phone: "+91 90909 09090", 
+    role: "Guest", 
+    status: "Blocked", 
+    walletBalance: 250, 
+    joinedDate: "10 March, 2026",
+    panNumber: "VWXYZ9876K",
+    gstin: "27VWXYZ9876K1Z9",
+    bankAccount: "445566778899 (ICICI Bank)",
+    bankIFSC: "ICIC0000007",
+    kycStatus: "Rejected"
+  },
+  { 
+    id: "USR-005", 
+    name: "Sneha Reddy", 
+    email: "sneha.r@example.com", 
+    phone: "+91 88877 66554", 
+    role: "Dual Mode", 
+    status: "Active", 
+    walletBalance: 8000, 
+    joinedDate: "01 April, 2026",
+    panNumber: "WXYZP9876Q",
+    gstin: "05WXYZP9876Q1Z3",
+    bankAccount: "554433221100 (HDFC Bank)",
+    bankIFSC: "HDFC0000888",
+    kycStatus: "Pending"
+  }
 ];
 
 export const INITIAL_APPLICATIONS: HostApplication[] = [
@@ -126,4 +198,77 @@ export const INITIAL_AUDITS: AuditLog[] = [
   { id: "AUD-003", timestamp: "05:32:45 AM", type: "Security", event: "API Rate-limiting warning triggered for IP 192.168.1.108", status: "Success" },
   { id: "AUD-004", timestamp: "05:34:11 AM", type: "Webhook", event: "Razorpay refund event failure: ref_H77123s", status: "Failed" },
   { id: "AUD-005", timestamp: "05:36:20 AM", type: "Security", event: "Blocked rogue access attempt to /api/admin/configs from IP 45.2.12.9", status: "Blocked" }
+];
+
+export const INITIAL_DISPUTES: DisputeTicket[] = [
+  {
+    id: "DSP-101",
+    bookingId: "BOK-108",
+    guestName: "Meera Kapoor",
+    hostName: "Aryan Singh",
+    issue: "Guest claims the room heating was non-functional in sub-zero Manali weather. Requested full refund.",
+    amount: 22500,
+    status: "Pending",
+    createdAt: "Today, 08:30 AM"
+  },
+  {
+    id: "DSP-102",
+    bookingId: "BOK-104",
+    guestName: "Nikhil Dev",
+    hostName: "Amit Thakur",
+    issue: "Paragliding activity cancelled due to high winds, but host refuses to refund full amount.",
+    amount: 5000,
+    status: "Pending",
+    createdAt: "Yesterday, 04:15 PM"
+  },
+  {
+    id: "DSP-103",
+    bookingId: "BOK-105",
+    guestName: "Shreya Gupta",
+    hostName: "Kailash Bhati",
+    issue: "AC in desert luxury glamping tent leaked and caused water damage to guest's camera. Seeking compensation.",
+    amount: 11000,
+    status: "Resolved-PaidVendor",
+    createdAt: "18 May, 2026"
+  }
+];
+
+export const INITIAL_CHATROOMS: ChatRoom[] = [
+  {
+    id: "CHT-001",
+    guestName: "Meera Kapoor",
+    hostName: "Aryan Singh",
+    propertyName: "The Creek Villa: A Riverside Sanctuary",
+    lastMessage: "Is early check-in possible tomorrow around 9 AM?",
+    unreadCount: 2,
+    messages: [
+      { id: "m1", sender: "Guest", text: "Hello Aryan, looking forward to our stay at the Creek Villa.", timestamp: "Yesterday, 02:00 PM" },
+      { id: "m2", sender: "Host", text: "Welcome Meera! We are preparing the villa for you.", timestamp: "Yesterday, 02:30 PM" },
+      { id: "m3", sender: "Guest", text: "Is early check-in possible tomorrow around 9 AM?", timestamp: "Today, 08:00 AM" }
+    ]
+  },
+  {
+    id: "CHT-002",
+    guestName: "Anuj Sharma",
+    hostName: "Rakesh Negi",
+    propertyName: "Ganga River Rafting Adventure",
+    lastMessage: "Yes, meeting point is at the tapovan bridge at 8 AM.",
+    unreadCount: 0,
+    messages: [
+      { id: "m4", sender: "Guest", text: "Hi Rakesh, where is the exact starting point for rafting?", timestamp: "Yesterday, 06:15 PM" },
+      { id: "m5", sender: "Host", text: "Yes, meeting point is at the tapovan bridge at 8 AM.", timestamp: "Yesterday, 06:30 PM" }
+    ]
+  },
+  {
+    id: "CHT-003",
+    guestName: "Kabir Roy",
+    hostName: "Sneha Reddy",
+    propertyName: "Mountain View Cottage",
+    lastMessage: "No problem. Let us know if you need pick up.",
+    unreadCount: 0,
+    messages: [
+      { id: "m6", sender: "Guest", text: "Hey Sneha, our train is delayed. We will arrive late by 2 hours.", timestamp: "15 May, 2026, 05:00 PM" },
+      { id: "m7", sender: "Host", text: "No problem. Let us know if you need pick up.", timestamp: "15 May, 2026, 05:15 PM" }
+    ]
+  }
 ];

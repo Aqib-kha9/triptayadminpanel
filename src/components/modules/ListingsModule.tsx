@@ -8,6 +8,7 @@ interface ListingsModuleProps {
   setAudits: React.Dispatch<React.SetStateAction<AuditLog[]>>;
   categoryFilter: string;
   setCategoryFilter: (filter: string) => void;
+  setSelectedPropertyForEdit: (property: Property) => void;
 }
 
 export const ListingsModule: React.FC<ListingsModuleProps> = ({
@@ -15,7 +16,8 @@ export const ListingsModule: React.FC<ListingsModuleProps> = ({
   setProperties,
   setAudits,
   categoryFilter,
-  setCategoryFilter
+  setCategoryFilter,
+  setSelectedPropertyForEdit
 }) => {
   // Helper for conditional classes
   const cn = (...classes: any[]) => classes.filter(Boolean).join(" ");
@@ -134,7 +136,13 @@ export const ListingsModule: React.FC<ListingsModuleProps> = ({
                     <span className="font-extrabold text-zinc-950">{prop.rating}</span>
                   </div>
                 </td>
-                <td className="py-4 px-4 text-right">
+                <td className="py-4 px-4 text-right space-x-2">
+                  <button
+                    onClick={() => setSelectedPropertyForEdit(prop)}
+                    className="px-3 py-1.5 rounded-lg bg-zinc-50 border border-zinc-100 hover:bg-zinc-100 text-zinc-600 transition-all text-[10px] font-black tracking-tight"
+                  >
+                    Edit Details
+                  </button>
                   <button
                     onClick={() => handleToggleStatus(prop.id)}
                     className={cn(
@@ -144,7 +152,7 @@ export const ListingsModule: React.FC<ListingsModuleProps> = ({
                         : "bg-emerald-50 border-emerald-100 text-emerald-500 hover:bg-emerald-500 hover:text-white"
                     )}
                   >
-                    {prop.status === "Active" ? "Suspend Listing" : "Approve Listing"}
+                    {prop.status === "Active" ? "Suspend" : "Activate"}
                   </button>
                 </td>
               </tr>

@@ -1,26 +1,29 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { RefreshCw } from "lucide-react";
 import type { AuditLog } from "../types";
 
+const TAB_TITLES: Record<string, string> = {
+  "/": "Platform Operations",
+  "/approvals": "Host KYC Approvals Board",
+  "/users": "Platform Users & Coins Dashboard",
+  "/listings": "Property & Activity Moderation",
+  "/financials": "Settlement & Payout Ledger",
+  "/disputes": "Dispute & Refund Arbitration",
+  "/chats": "Support Chat Inbox",
+  "/coupons": "Campaigns & Offer Center",
+  "/attractions": "Nearby Tourist Hotspots",
+  "/settings": "System & Security Settings",
+  "/audits": "System Queues & Audit Logs",
+};
+
 interface HeaderProps {
-  activeTab: string;
   setAudits: React.Dispatch<React.SetStateAction<AuditLog[]>>;
 }
 
-export const Header: React.FC<HeaderProps> = ({ activeTab, setAudits }) => {
-  const getTabTitle = () => {
-    switch (activeTab) {
-      case "dashboard": return "Platform Operations";
-      case "approvals": return "Host KYC Approvals Board";
-      case "users": return "Platform Users & Coins Dashboard";
-      case "listings": return "Property & Activity Moderation";
-      case "financials": return "Settlement & Payout Ledger";
-      case "coupons": return "Campaigns & Offer Center";
-      case "attractions": return "Nearby Tourist Hotspots";
-      case "audits": return "System Queues & Audit Logs";
-      default: return "Triptay Hub Console";
-    }
-  };
+export const Header: React.FC<HeaderProps> = ({ setAudits }) => {
+  const location = useLocation();
+  const title = TAB_TITLES[location.pathname] || "Triptay Hub Console";
 
   const handleRefreshTelemetry = () => {
     setAudits(prev => [{
@@ -36,7 +39,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setAudits }) => {
     <header className="h-20 bg-white border-b border-zinc-100 flex items-center justify-between px-8 flex-shrink-0 z-10">
       <div className="flex items-center gap-3">
         <h2 className="text-lg font-black text-zinc-900 tracking-tight">
-          {getTabTitle()}
+          {title}
         </h2>
         <div className="h-4 w-px bg-zinc-200 hidden md:block" />
         <span className="text-xs font-bold text-zinc-400 hidden md:block tracking-normal">Enterprise Console v1.3</span>
@@ -47,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setAudits }) => {
           <p className="text-xs font-bold text-zinc-900 tracking-tight">Live Operations</p>
           <p className="text-[10px] text-zinc-400 font-bold tracking-tight">Server: AWS Mumbai</p>
         </div>
-        <button 
+        <button
           onClick={handleRefreshTelemetry}
           className="p-2.5 rounded-xl border border-zinc-100 hover:bg-zinc-50 transition-colors text-zinc-500"
         >
