@@ -75,7 +75,15 @@ function getCategoryBadge(category: string) {
 
 async function apiFetch<T = any>(path: string, options?: RequestInit): Promise<T> {
   const url = `${API_BASE}/api/admin${path}`;
-  const res = await fetch(url, { ...options, credentials: "include" });
+  const token = localStorage.getItem("admin_token");
+  const res = await fetch(url, {
+    ...options,
+    credentials: "include",
+    headers: {
+      ...(options?.headers || {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.message || `Request failed with status ${res.status}`);

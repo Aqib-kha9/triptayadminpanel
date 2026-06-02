@@ -137,8 +137,10 @@ export const UserDetailModule: React.FC<UserDetailModuleProps> = ({ setAudits })
         setLoading(true);
         setError(null);
         try {
+            const token = localStorage.getItem("admin_token");
             const res = await fetch(`${API_BASE}/api/admin/users/${userId}`, {
                 credentials: "include",
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
             if (!res.ok) {
                 const body = await res.json().catch(() => ({}));
@@ -170,10 +172,14 @@ export const UserDetailModule: React.FC<UserDetailModuleProps> = ({ setAudits })
         );
 
         try {
+            const token = localStorage.getItem("admin_token");
             const res = await fetch(`${API_BASE}/api/admin/users/${user._id}/toggle-status`, {
                 method: "PATCH",
                 credentials: "include",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
             });
             if (!res.ok) {
                 const body = await res.json().catch(() => ({}));
@@ -214,10 +220,14 @@ export const UserDetailModule: React.FC<UserDetailModuleProps> = ({ setAudits })
         );
 
         try {
+            const token = localStorage.getItem("admin_token");
             const res = await fetch(`${API_BASE}/api/admin/users/${user._id}/wallet`, {
                 method: "PATCH",
                 credentials: "include",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
                 body: JSON.stringify({ amount: awardAmount, reason: awardReason }),
             });
             if (!res.ok) {
@@ -253,9 +263,11 @@ export const UserDetailModule: React.FC<UserDetailModuleProps> = ({ setAudits })
         if (!user || deleteConfirmRef.current.toLowerCase() !== user.name.toLowerCase()) return;
         setDeleting(true);
         try {
+            const token = localStorage.getItem("admin_token");
             const res = await fetch(`${API_BASE}/api/admin/users/${user._id}`, {
                 method: "DELETE",
                 credentials: "include",
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
             const body = await res.json().catch(() => ({}));
             if (!res.ok) {

@@ -131,8 +131,10 @@ export const UsersModule: React.FC<UsersModuleProps> = ({ setAudits }) => {
       if (search.trim()) params.set("search", search.trim());
       if (roleFilter) params.set("role", roleFilter);
 
+      const token = localStorage.getItem("admin_token");
       const res = await fetch(`${API_BASE}/api/admin/users?${params}`, {
         credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -186,10 +188,14 @@ export const UsersModule: React.FC<UsersModuleProps> = ({ setAudits }) => {
     );
 
     try {
+      const token = localStorage.getItem("admin_token");
       const res = await fetch(`${API_BASE}/api/admin/users/${item._id}/toggle-status`, {
         method: "PATCH",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -236,10 +242,14 @@ export const UsersModule: React.FC<UsersModuleProps> = ({ setAudits }) => {
     );
 
     try {
+      const token = localStorage.getItem("admin_token");
       const res = await fetch(`${API_BASE}/api/admin/users/${target._id}/wallet`, {
         method: "PATCH",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ amount: awardAmount, reason: awardReason }),
       });
       if (!res.ok) {

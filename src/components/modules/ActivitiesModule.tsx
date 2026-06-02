@@ -169,8 +169,10 @@ export const ActivitiesModule: React.FC<ActivitiesModuleProps> = ({ setAudits })
             if (search.trim()) params.set("search", search.trim());
             if (statusFilter) params.set("status", statusFilter);
 
+            const token = localStorage.getItem("admin_token");
             const res = await fetch(`${API_BASE}/api/admin/activities?${params}`, {
                 credentials: "include",
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
             if (!res.ok) {
                 const body = await res.json().catch(() => ({}));
@@ -225,12 +227,16 @@ export const ActivitiesModule: React.FC<ActivitiesModuleProps> = ({ setAudits })
         );
 
         try {
+            const token = localStorage.getItem("admin_token");
             const res = await fetch(
                 `${API_BASE}/api/admin/activities/${item._id}/toggle-status`,
                 {
                     method: "PATCH",
                     credentials: "include",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    },
                     body: JSON.stringify({ action }),
                 }
             );
@@ -278,12 +284,16 @@ export const ActivitiesModule: React.FC<ActivitiesModuleProps> = ({ setAudits })
         );
 
         try {
+            const token = localStorage.getItem("admin_token");
             const res = await fetch(
                 `${API_BASE}/api/admin/activities/${item._id}/change-status`,
                 {
                     method: "PATCH",
                     credentials: "include",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                    },
                     body: JSON.stringify({ status: newStatus }),
                 }
             );
