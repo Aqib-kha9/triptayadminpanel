@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Database, Search, Terminal, Play, AlertCircle } from "lucide-react";
 import type { AuditLog } from "../../types";
 
@@ -15,6 +15,7 @@ export const AuditsModule: React.FC<AuditsModuleProps> = ({
   setSearchTerm,
   onSimulateLog
 }) => {
+  const [expandedLogs, setExpandedLogs] = useState<Record<string, boolean>>({});
   // Helper for conditional classes
   const cn = (...classes: any[]) => classes.filter(Boolean).join(" ");
 
@@ -145,28 +146,41 @@ export const AuditsModule: React.FC<AuditsModuleProps> = ({
 
         <div className="space-y-3 max-h-[480px] overflow-y-auto pr-2">
           {filteredAudits.map(log => (
-            <div key={log.id} className="flex gap-4 items-start py-1.5 hover:bg-zinc-900/40 px-2 rounded-xl transition-all">
-              <span className="text-zinc-600 select-none">[{log.timestamp}]</span>
-              <span className={cn(
-                "font-black tracking-wider text-[10px] uppercase px-1.5 py-0.5 rounded flex-shrink-0 select-none min-w-[75px] text-center",
-                log.type === "Webhook" && "bg-purple-950 text-purple-400",
-                log.type === "SQS Queue" && "bg-blue-950 text-blue-400",
-                log.type === "Security" && "bg-rose-950 text-rose-400",
-                log.type === "System" && "bg-zinc-800 text-zinc-300"
-              )}>
-                {log.type}
-              </span>
-              <span className="text-zinc-300 flex-1 leading-relaxed">
-                {log.event}
-              </span>
-              <span className={cn(
-                "font-bold uppercase tracking-wider text-[9px] flex-shrink-0 select-none",
-                log.status === "Success" && "text-emerald-500",
-                log.status === "Failed" && "text-rose-500",
-                log.status === "Blocked" && "text-rose-500 font-black animate-pulse"
-              )}>
-                [{log.status}]
-              </span>
+            <div key={log.id} className="border-b border-zinc-900/30 pb-2 last:border-0">
+              <div 
+                onClick={() => setExpandedLogs(prev => ({ ...prev, [log.id]: !prev[log.id] }))}
+                className="flex gap-4 items-start py-1.5 hover:bg-zinc-900/40 px-2 rounded-xl transition-all cursor-pointer select-none"
+              >
+                <span className="text-zinc-600 select-none">[{log.timestamp}]</span>
+                <span className={cn(
+                  "font-black tracking-wider text-[10px] uppercase px-1.5 py-0.5 rounded flex-shrink-0 select-none min-w-[75px] text-center",
+                  log.type === "Webhook" && "bg-purple-950 text-purple-400",
+                  log.type === "SQS Queue" && "bg-blue-950 text-blue-400",
+                  log.type === "Security" && "bg-rose-950 text-rose-400",
+                  log.type === "System" && "bg-zinc-800 text-zinc-300"
+                )}>
+                  {log.type}
+                </span>
+                <span className="text-zinc-300 flex-1 leading-relaxed">
+                  {log.event}
+                </span>
+                <span className={cn(
+                  "font-bold uppercase tracking-wider text-[9px] flex-shrink-0 select-none",
+                  log.status === "Success" && "text-emerald-500",
+                  log.status === "Failed" && "text-rose-500",
+                  log.status === "Blocked" && "text-rose-500 font-black animate-pulse"
+                )}>
+                  [{log.status}]
+                </span>
+              </div>
+              {expandedLogs[log.id] && (log as any).details && (
+                <div className="pl-6 pr-4 py-2 border-t border-zinc-900/60 mt-1 bg-zinc-950/80 rounded-lg">
+                  <span className="text-[9px] font-black text-zinc-500 uppercase block mb-1">Payload Telemetry Details:</span>
+                  <pre className="text-zinc-400 text-[10px] whitespace-pre-wrap overflow-x-auto select-text font-mono leading-normal">
+                    {JSON.stringify((log as any).details, null, 2)}
+                  </pre>
+                </div>
+              )}
             </div>
           ))}
 

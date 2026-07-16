@@ -4,7 +4,8 @@ import { ListingsModule } from "../components/modules/ListingsModule";
 export default function ListingsPage() {
     const {
         properties, setProperties, setAudits,
-        categoryFilter, setCategoryFilter, setSelectedPropertyForEdit
+        categoryFilter, setCategoryFilter, setSelectedPropertyForEdit,
+        toggleListingStatus
     } = useAdmin();
     return (
         <ListingsModule
@@ -14,6 +15,7 @@ export default function ListingsPage() {
             categoryFilter={categoryFilter}
             setCategoryFilter={setCategoryFilter}
             setSelectedPropertyForEdit={setSelectedPropertyForEdit}
+            toggleListingStatus={toggleListingStatus}
         />
     );
 }

@@ -15,6 +15,7 @@ import {
   Home,
   Compass,
   X,
+  Send,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
@@ -36,7 +37,8 @@ const NAV_ITEMS = [
   { id: "financials", label: "GST & Ledger split", icon: <Coins className="w-4 h-4" />, path: "/financials" },
   { id: "disputes", label: "Dispute Tickets", icon: <AlertTriangle className="w-4 h-4" />, path: "/disputes", badgeKey: "disputes" as const },
   { id: "chats", label: "Support Chat Inbox", icon: <MessageSquare className="w-4 h-4" />, path: "/chats", badgeKey: "chats" as const },
-  { id: "coupons", label: "Coupons & Campaigns", icon: <Tag className="w-4 h-4" />, path: "/coupons" },
+  { id: "coupons", label: "Coupons Management", icon: <Tag className="w-4 h-4" />, path: "/coupons" },
+  { id: "campaigns", label: "Marketing Campaigns", icon: <Send className="w-4 h-4" />, path: "/campaigns" },
   { id: "attractions", label: "Attractions CMS", icon: <Map className="w-4 h-4" />, path: "/attractions" },
   { id: "settings", label: "System Settings", icon: <Settings className="w-4 h-4" />, path: "/settings" },
   { id: "audits", label: "Queue & Audit Logs", icon: <Database className="w-4 h-4" />, path: "/audits" },

@@ -5,9 +5,45 @@ import {
   ShieldCheck,
   TrendingUp,
   MapPin,
-  FileText
+  FileText,
+  Users,
+  Activity,
+  Calendar,
+  Loader2,
 } from "lucide-react";
 import type { SystemBooking, HostApplication, PlatformUser, Property } from "../../types";
+
+interface DashboardStats {
+  counts: {
+    users: number;
+    listings: number;
+    activities: number;
+    bookings: number;
+    pendingKyc: number;
+    publishedListings: number;
+    publishedActivities: number;
+    activeBookings: number;
+    pendingPayouts: number;
+    activeCoupons: number;
+  };
+  revenue: number;
+  recentBookings: Array<{
+    id: string;
+    bookingRef: string;
+    status: string;
+    totalAmount: number;
+    createdAt: string;
+    userName?: string;
+    userEmail?: string;
+  }>;
+  recentUsers: Array<{
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    createdAt: string;
+  }>;
+}
 
 interface DashboardModuleProps {
   bookings: SystemBooking[];
@@ -17,6 +53,8 @@ interface DashboardModuleProps {
   commissionRate: number;
   gstRate: number;
   setSelectedKycApp: (app: HostApplication) => void;
+  dashboardStats: DashboardStats | null;
+  dashboardLoading: boolean;
 }
 
 export const DashboardModule: React.FC<DashboardModuleProps> = ({
@@ -26,15 +64,33 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
   properties,
   commissionRate,
   gstRate,
-  setSelectedKycApp
+  setSelectedKycApp,
+  dashboardStats,
+  dashboardLoading,
 }) => {
-  const activeBookings = bookings.filter(b => b.status !== "Cancelled");
-  const platformRevenueCalculated = activeBookings.reduce((sum, b) => sum + (b.amount * (commissionRate / 100)), 0);
-  const totalFinancialVolume = activeBookings.reduce((sum, b) => sum + b.amount, 0);
-  const pendingApprovalsCount = applications.filter(app => app.status === "Pending").length;
+  // Use real dashboard stats if available, otherwise fall back to computed values
+  const stats = dashboardStats;
+  const activeBookings = stats ? stats.counts.activeBookings : bookings.filter(b => b.status !== "Cancelled").length;
+  const totalFinancialVolume = stats ? stats.revenue : bookings.filter(b => b.status !== "Cancelled").reduce((sum, b) => sum + b.amount, 0);
+  const platformRevenueCalculated = stats ? Math.round(stats.revenue * (commissionRate / 100)) : bookings.filter(b => b.status !== "Cancelled").reduce((sum, b) => sum + (b.amount * (commissionRate / 100)), 0);
+  const pendingApprovalsCount = stats ? stats.counts.pendingKyc : applications.filter(app => app.status === "Pending").length;
+  const totalUsers = stats ? stats.counts.users : users.length;
+  const totalListings = stats ? stats.counts.listings : properties.length;
+  const totalActivities = stats ? stats.counts.activities : 0;
+  const totalBookings = stats ? stats.counts.bookings : bookings.length;
+  const pendingPayouts = stats ? stats.counts.pendingPayouts : 0;
+  const activeCoupons = stats ? stats.counts.activeCoupons : 0;
 
   return (
     <div className="space-y-8">
+      {/* Loading indicator */}
+      {dashboardLoading && (
+        <div className="flex items-center justify-center py-4">
+          <Loader2 className="w-5 h-5 text-primary animate-spin" />
+          <span className="ml-2 text-xs font-bold text-zinc-400">Syncing live dashboard data…</span>
+        </div>
+      )}
+
       {/* Financial & Approvals Bento Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
@@ -43,7 +99,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
             <p className="text-[10px] font-black text-zinc-400 tracking-normal uppercase">Gross booking Volume (GMV)</p>
             <h3 className="text-3xl font-black text-zinc-900">₹{totalFinancialVolume.toLocaleString()}</h3>
             <p className="text-[9px] text-emerald-600 font-bold tracking-normal flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" /> +12.4% vs last week
+              <TrendingUp className="w-3 h-3" /> {stats ? "Live from database" : "+12.4% vs last week"}
             </p>
           </div>
           <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center text-primary">
@@ -78,7 +134,7 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
         <div className="p-6 rounded-[32px] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group hover:border-zinc-200 hover:shadow-lg hover:shadow-purple-500/5 transition-all duration-300">
           <div className="space-y-2">
             <p className="text-[10px] font-black text-zinc-400 tracking-normal uppercase">Active properties & tours</p>
-            <h3 className="text-3xl font-black text-zinc-900">{properties.filter(p => p.status === "Active").length} Listings</h3>
+            <h3 className="text-3xl font-black text-zinc-900">{stats ? stats.counts.publishedListings + stats.counts.publishedActivities : properties.filter(p => p.status === "Active").length} Listings</h3>
             <p className="text-[9px] text-purple-600 font-bold tracking-normal">Dual stays & activity packs live</p>
           </div>
           <div className="absolute top-4 right-4 w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-500">
@@ -87,6 +143,71 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
         </div>
 
       </div>
+
+      {/* Live Stats Row */}
+      {stats && (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="p-4 rounded-2xl bg-white border border-zinc-100 shadow-sm flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-500">
+              <Users className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-[9px] font-black text-zinc-400 uppercase">Total Users</p>
+              <p className="text-lg font-black text-zinc-900">{totalUsers}</p>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-white border border-zinc-100 shadow-sm flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-500">
+              <Building2 className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-[9px] font-black text-zinc-400 uppercase">Listings</p>
+              <p className="text-lg font-black text-zinc-900">{totalListings}</p>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-white border border-zinc-100 shadow-sm flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-500">
+              <Activity className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-[9px] font-black text-zinc-400 uppercase">Activities</p>
+              <p className="text-lg font-black text-zinc-900">{totalActivities}</p>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-white border border-zinc-100 shadow-sm flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-500">
+              <Calendar className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-[9px] font-black text-zinc-400 uppercase">Bookings</p>
+              <p className="text-lg font-black text-zinc-900">{totalBookings}</p>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-white border border-zinc-100 shadow-sm flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-500">
+              <DollarSign className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-[9px] font-black text-zinc-400 uppercase">Pending Payouts</p>
+              <p className="text-lg font-black text-zinc-900">{pendingPayouts}</p>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-white border border-zinc-100 shadow-sm flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-500">
+              <TrendingUp className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-[9px] font-black text-zinc-400 uppercase">Active Coupons</p>
+              <p className="text-lg font-black text-zinc-900">{activeCoupons}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Core section: Recent host registrations & details */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -161,9 +282,23 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
                 <p className="text-[10px] text-zinc-400 font-bold">Dual mode profiles mapped</p>
               </div>
               <span className="text-sm font-black text-secondary bg-teal-50 border border-secondary/10 px-3 py-1 rounded-xl">
-                {users.length} Users
+                {totalUsers} Users
               </span>
             </div>
+
+            {stats && stats.recentBookings.length > 0 && (
+              <div className="p-4 bg-zinc-50 border border-zinc-100 rounded-2xl space-y-2">
+                <p className="text-xs font-black text-zinc-900">Recent Bookings</p>
+                <div className="space-y-1.5">
+                  {stats.recentBookings.slice(0, 3).map((b) => (
+                    <div key={b.id} className="flex items-center justify-between text-[10px]">
+                      <span className="font-bold text-zinc-600 truncate">{b.bookingRef || b.id}</span>
+                      <span className="font-black text-zinc-900">₹{b.totalAmount.toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

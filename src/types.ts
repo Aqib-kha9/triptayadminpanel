@@ -66,6 +66,8 @@ export interface Coupon {
   targetName: string;
   expiryDate: string;
   status: "Active" | "Expired";
+  usedCount?: number;
+  usageLimit?: number;
 }
 
 export interface Campaign {
@@ -74,12 +76,23 @@ export interface Campaign {
   targetGroup: "Guests" | "Vendors" | "All Users";
   channel: "AWS SES Email" | "Twilio WhatsApp" | "Firebase Push";
   scheduledTime: string;
-  status: "Sent" | "Scheduled" | "Draft";
+  status: "Sent" | "Scheduled" | "Draft" | "Running";
   analytics: {
     sent: number;
     opens: number;
     clicks: number;
+    failed?: number;
   };
+}
+
+export interface CampaignTemplate {
+  id: string;
+  name: string;
+  type: "email" | "whatsapp" | "push";
+  subject?: string;
+  body: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface TouristAttraction {
@@ -108,6 +121,7 @@ export interface AuditLog {
   type: "Webhook" | "SQS Queue" | "Security" | "System";
   event: string;
   status: "Success" | "Failed" | "Blocked";
+  details?: any;
 }
 
 export interface DisputeTicket {
@@ -148,4 +162,14 @@ export interface Testimonial {
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface Activity {
+  id: string;
+  title: string;
+  hostName: string;
+  location: string;
+  price: number;
+  rating: string;
+  status: "Active" | "Suspended";
 }

@@ -267,6 +267,9 @@ export const ActivitiesModule: React.FC<ActivitiesModuleProps> = ({ setAudits })
 
     // ── Change Status (Publish / Draft / Reject) ──
     const handleChangeStatus = async (item: ActivityItem, newStatus: "published" | "draft" | "rejected") => {
+        const adminNotes = prompt(`Enter a note/reason for changing the status of "${item.name}" to "${newStatus}" (Optional):`);
+        if (adminNotes === null) return; // Cancelled
+
         const previousState = { ...item };
         setChangingStatusId(item._id);
 
@@ -294,7 +297,7 @@ export const ActivitiesModule: React.FC<ActivitiesModuleProps> = ({ setAudits })
                         "Content-Type": "application/json",
                         ...(token ? { Authorization: `Bearer ${token}` } : {}),
                     },
-                    body: JSON.stringify({ status: newStatus }),
+                    body: JSON.stringify({ status: newStatus, adminNotes }),
                 }
             );
             if (!res.ok) {

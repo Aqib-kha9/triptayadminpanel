@@ -132,7 +132,8 @@ export const AttractionsModule: React.FC<AttractionsModuleProps> = ({ setAudits 
 
       const res = await apiFetch<{
         status: string;
-        data: { destinations: any[]; pagination: PaginationMeta };
+        pagination: PaginationMeta;
+        data: { destinations: any[] };
       }>(`/destinations?${params.toString()}`);
 
       const mapped: TouristAttraction[] = res.data.destinations.map((d: any) => ({
@@ -156,7 +157,7 @@ export const AttractionsModule: React.FC<AttractionsModuleProps> = ({ setAudits 
       }));
 
       setDestinations(mapped);
-      setPagination(res.data.pagination);
+      setPagination(res.pagination || { page: 1, totalPages: 1, total: 0 });
     } catch (err: any) {
       setError(err.message || "Failed to load destinations.");
     } finally {

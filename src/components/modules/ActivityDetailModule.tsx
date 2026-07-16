@@ -620,20 +620,26 @@ export const ActivityDetailModule: React.FC<ActivityDetailModuleProps> = ({ setA
                             <div className="border-t border-zinc-50 pt-4">
                                 <p className="text-[10px] font-black text-zinc-400 uppercase mb-2">Seasonal Pricing</p>
                                 <div className="space-y-2">
-                                    {activity.seasonalPrices.map((sp, i) => (
-                                        <div key={i} className="flex items-center justify-between p-2.5 rounded-lg bg-zinc-50 text-xs font-bold">
-                                            <div>
-                                                <span className="text-zinc-700">{sp.seasonName}</span>
-                                                <span className="text-[10px] text-zinc-400 ml-2">
-                                                    {formatDate(sp.startDate)} – {formatDate(sp.endDate)}
+                                    {activity.seasonalPrices.map((sp: any, i) => {
+                                        const fromVal = sp.from || sp.startDate || "";
+                                        const toVal = sp.to || sp.endDate || "";
+                                        const priceVal = sp.price ?? sp.pricePerPerson ?? 0;
+
+                                        return (
+                                            <div key={i} className="flex items-center justify-between p-2.5 rounded-lg bg-zinc-50 text-xs font-bold">
+                                                <div>
+                                                    <span className="text-zinc-700">{sp.seasonName}</span>
+                                                    <span className="text-[10px] text-zinc-400 ml-2">
+                                                        {formatDate(fromVal)} – {formatDate(toVal)}
+                                                    </span>
+                                                </div>
+                                                <span className="text-zinc-900 flex items-center gap-0.5">
+                                                    <IndianRupee className="w-3 h-3" />
+                                                    {Number(priceVal).toLocaleString("en-IN")}
                                                 </span>
                                             </div>
-                                            <span className="text-zinc-900 flex items-center gap-0.5">
-                                                <IndianRupee className="w-3 h-3" />
-                                                {sp.pricePerPerson.toLocaleString("en-IN")}
-                                            </span>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}

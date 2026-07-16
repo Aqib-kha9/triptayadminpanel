@@ -1,6 +1,34 @@
 import React from "react";
-import { Download, Receipt } from "lucide-react";
+import { Download, Receipt, Loader2 } from "lucide-react";
 import type { SystemBooking } from "../../types";
+
+interface CommissionSummary {
+  totalCommission: number;
+  totalHostPayout: number;
+  pendingCommission: number;
+  processedCommission: number;
+  totalTransactions: number;
+}
+
+interface HostBreakdownItem {
+  hostId: string;
+  hostName: string;
+  hostEmail: string;
+  commission: number;
+  payout: number;
+  pending: number;
+}
+
+interface PayoutItem {
+  id: string;
+  hostId: string;
+  hostName: string;
+  hostEmail: string;
+  amount: number;
+  status: string;
+  payoutRef: string;
+  createdAt: string;
+}
 
 interface FinancialsModuleProps {
   bookings: SystemBooking[];
@@ -11,6 +39,10 @@ interface FinancialsModuleProps {
   triggerPayoutModal: (vendorName: string, balance: number) => void;
   handleCancelAndRefundBooking: (bookingId: string) => void;
   setSelectedInvoiceBooking: (booking: SystemBooking | null) => void;
+  commissionSummary: CommissionSummary | null;
+  hostBreakdown: HostBreakdownItem[];
+  payouts: PayoutItem[];
+  financialsLoading: boolean;
 }
 
 export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
@@ -21,11 +53,15 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
   setGstRate,
   triggerPayoutModal,
   handleCancelAndRefundBooking,
-  setSelectedInvoiceBooking
+  setSelectedInvoiceBooking,
+  commissionSummary,
+  hostBreakdown,
+  payouts,
+  financialsLoading
 }) => {
   const handleExportCSV = () => {
     const headers = "Booking ID,Guest Name,Property/Experience,Host Name,Amount,Date,Status\n";
-    const rows = bookings.map(b => 
+    const rows = bookings.map(b =>
       `"${b.id}","${b.guestName}","${b.propertyName}","${b.hostName}",${b.amount},"${b.date}","${b.status}"`
     ).join("\n");
     const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
@@ -42,10 +78,14 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
   const cn = (...classes: any[]) => classes.filter(Boolean).join(" ");
 
   const activeBookings = bookings.filter(b => b.status !== "Cancelled");
-  const platformRevenueCalculated = activeBookings.reduce((sum, b) => sum + (b.amount * (commissionRate / 100)), 0);
+  // Use real commission summary from backend if available, otherwise fall back to calculated values
+  const platformRevenueCalculated = commissionSummary?.totalCommission ?? activeBookings.reduce((sum, b) => sum + (b.amount * (commissionRate / 100)), 0);
   const gstCalculatedCut = activeBookings.reduce((sum, b) => sum + (b.amount * (gstRate / 100)), 0);
-  const vendorShareCalculated = activeBookings.reduce((sum, b) => sum + (b.amount * (1 - (commissionRate / 100) - (gstRate / 100))), 0);
+  const vendorShareCalculated = commissionSummary?.totalHostPayout ?? activeBookings.reduce((sum, b) => sum + (b.amount * (1 - (commissionRate / 100) - (gstRate / 100))), 0);
   const totalFinancialVolume = activeBookings.reduce((sum, b) => sum + b.amount, 0);
+  const pendingCommissionTotal = commissionSummary?.pendingCommission ?? 0;
+  const processedCommissionTotal = commissionSummary?.processedCommission ?? 0;
+  const totalTransactions = commissionSummary?.totalTransactions ?? activeBookings.length;
 
   return (
     <div className="space-y-8">
@@ -62,10 +102,10 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
               <span className="text-zinc-500">Platform commission Rate</span>
               <span className="text-primary bg-primary/5 px-2 py-0.5 rounded">{commissionRate}%</span>
             </div>
-            <input 
-              type="range" 
-              min="5" 
-              max="35" 
+            <input
+              type="range"
+              min="5"
+              max="35"
               value={commissionRate}
               onChange={e => setCommissionRate(parseInt(e.target.value))}
               className="w-full h-1.5 bg-zinc-100 rounded-lg appearance-none cursor-pointer accent-primary"
@@ -78,10 +118,10 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
               <span className="text-zinc-500">CGST + SGST Combined Split</span>
               <span className="text-secondary bg-secondary/5 px-2 py-0.5 rounded">{gstRate}%</span>
             </div>
-            <input 
-              type="range" 
-              min="0" 
-              max="28" 
+            <input
+              type="range"
+              min="0"
+              max="28"
               value={gstRate}
               onChange={e => setGstRate(parseInt(e.target.value))}
               className="w-full h-1.5 bg-zinc-100 rounded-lg appearance-none cursor-pointer accent-secondary"
@@ -113,7 +153,7 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
 
       {/* Financial calculations card */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
+
         {/* Ledger splits */}
         <div className="lg:col-span-2 bg-white border border-zinc-100 shadow-sm rounded-[36px] p-6 space-y-6">
           <div>
@@ -126,33 +166,50 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
               <thead>
                 <tr className="border-b border-zinc-50 text-[10px] font-black tracking-tight text-zinc-400">
                   <th className="py-4 px-4">Host Name</th>
-                  <th className="py-4 px-4">Total Bookings</th>
-                  <th className="py-4 px-4">Platform commission</th>
-                  <th className="py-4 px-4">Expected payout balance</th>
+                  <th className="py-4 px-4">Platform Commission</th>
+                  <th className="py-4 px-4">Processed Payout</th>
+                  <th className="py-4 px-4">Pending Balance</th>
                   <th className="py-4 px-4 text-right">Manual Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-50 text-xs font-bold text-zinc-700">
-                {[
-                  { name: "Aryan Singh", count: 4, gross: 65000, balance: 55250 },
-                  { name: "Sneha Reddy", count: 2, gross: 32000, balance: 27200 },
-                  { name: "Rakesh Negi", count: 1, gross: 2400, balance: 2040 }
-                ].map((v, i) => (
-                  <tr key={i} className="hover:bg-zinc-50/50 transition-colors">
-                    <td className="py-4 px-4 text-zinc-950 font-extrabold">{v.name}</td>
-                    <td className="py-4 px-4">{v.count} bookings (₹{v.gross.toLocaleString()})</td>
-                    <td className="py-4 px-4 text-primary">₹{(v.gross * (commissionRate / 100)).toLocaleString()}</td>
-                    <td className="py-4 px-4 font-black text-emerald-600">₹{v.balance.toLocaleString()}</td>
-                    <td className="py-4 px-4 text-right">
-                      <button
-                        onClick={() => triggerPayoutModal(v.name, v.balance)}
-                        className="px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/90 text-white text-[10px] font-black tracking-tight transition-all shadow-md shadow-secondary/15"
-                      >
-                        Settle Balance
-                      </button>
+                {financialsLoading ? (
+                  <tr>
+                    <td colSpan={5} className="py-12 text-center">
+                      <div className="flex flex-col items-center gap-3 text-zinc-400">
+                        <Loader2 className="w-6 h-6 animate-spin" />
+                        <span className="text-xs font-bold">Loading settlement ledger...</span>
+                      </div>
                     </td>
                   </tr>
-                ))}
+                ) : hostBreakdown.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-12 text-center text-zinc-400 text-xs font-bold">
+                      No host settlement records found yet.
+                    </td>
+                  </tr>
+                ) : (
+                  hostBreakdown.map((host) => (
+                    <tr key={host.hostId} className="hover:bg-zinc-50/50 transition-colors">
+                      <td className="py-4 px-4">
+                        <div className="text-zinc-950 font-extrabold">{host.hostName}</div>
+                        <div className="text-[10px] text-zinc-400 font-semibold">{host.hostEmail}</div>
+                      </td>
+                      <td className="py-4 px-4 text-primary">₹{host.commission.toLocaleString()}</td>
+                      <td className="py-4 px-4 text-zinc-500">₹{host.payout.toLocaleString()}</td>
+                      <td className="py-4 px-4 font-black text-emerald-600">₹{host.pending.toLocaleString()}</td>
+                      <td className="py-4 px-4 text-right">
+                        <button
+                          onClick={() => triggerPayoutModal(host.hostName, host.pending)}
+                          disabled={host.pending <= 0}
+                          className="px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/90 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[10px] font-black tracking-tight transition-all shadow-md shadow-secondary/15"
+                        >
+                          Settle Balance
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -168,7 +225,7 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
           <div className="space-y-4">
             <div className="p-4 bg-zinc-50 border border-zinc-100 rounded-2xl space-y-3">
               <p className="text-xs font-bold text-zinc-900">How splitting works:</p>
-              
+
               <div className="space-y-2 text-zinc-500 text-[11px] leading-relaxed font-medium">
                 <div className="flex gap-2">
                   <span className="text-zinc-950 font-bold">1.</span>
@@ -266,6 +323,83 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
                   </td>
                 </tr>
               ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Payout History */}
+      <div className="bg-white border border-zinc-100 shadow-sm rounded-[36px] p-6 space-y-6">
+        <div>
+          <h3 className="text-sm font-black text-zinc-900 tracking-tight">Payout History</h3>
+          <p className="text-xs text-zinc-400 font-semibold">Record of all processed and pending vendor payouts</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="p-4 bg-zinc-50 rounded-2xl space-y-1">
+            <span className="text-[9px] font-black text-zinc-400 tracking-wider uppercase">Total Commission</span>
+            <h4 className="text-lg font-black text-primary">₹{(commissionSummary?.totalCommission ?? 0).toLocaleString()}</h4>
+          </div>
+          <div className="p-4 bg-zinc-50 rounded-2xl space-y-1 border border-amber-100">
+            <span className="text-[9px] font-black text-amber-500 tracking-wider uppercase">Pending Commission</span>
+            <h4 className="text-lg font-black text-amber-600">₹{pendingCommissionTotal.toLocaleString()}</h4>
+          </div>
+          <div className="p-4 bg-zinc-50 rounded-2xl space-y-1 border border-emerald-100">
+            <span className="text-[9px] font-black text-emerald-500 tracking-wider uppercase">Processed Commission</span>
+            <h4 className="text-lg font-black text-emerald-600">₹{processedCommissionTotal.toLocaleString()}</h4>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-zinc-50 text-[10px] font-black tracking-tight text-zinc-400">
+                <th className="py-4 px-4">Payout Ref</th>
+                <th className="py-4 px-4">Host Name</th>
+                <th className="py-4 px-4">Amount</th>
+                <th className="py-4 px-4">Status</th>
+                <th className="py-4 px-4">Date</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-50 text-xs font-bold text-zinc-700">
+              {financialsLoading ? (
+                <tr>
+                  <td colSpan={5} className="py-12 text-center">
+                    <div className="flex flex-col items-center gap-3 text-zinc-400">
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                      <span className="text-xs font-bold">Loading payout history...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : payouts.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-12 text-center text-zinc-400 text-xs font-bold">
+                    No payouts processed yet.
+                  </td>
+                </tr>
+              ) : (
+                payouts.map((p) => (
+                  <tr key={p.id} className="hover:bg-zinc-50/50 transition-colors">
+                    <td className="py-4 px-4"><span className="font-mono text-[10px] text-primary bg-primary/5 px-1.5 py-0.5 rounded">{p.payoutRef || p.id}</span></td>
+                    <td className="py-4 px-4">
+                      <div className="text-zinc-950 font-extrabold">{p.hostName}</div>
+                      <div className="text-[10px] text-zinc-400 font-semibold">{p.hostEmail}</div>
+                    </td>
+                    <td className="py-4 px-4 text-zinc-900 font-black">₹{p.amount.toLocaleString()}</td>
+                    <td className="py-4 px-4">
+                      <span className={cn(
+                        "text-[8px] font-black tracking-tight px-2.5 py-1 rounded-full border",
+                        p.status === "completed" && "bg-emerald-50 text-emerald-600 border-emerald-100",
+                        p.status === "pending" && "bg-amber-50 text-amber-600 border-amber-100",
+                        p.status === "failed" && "bg-rose-50 text-rose-600 border-rose-100"
+                      )}>
+                        {p.status}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4 text-zinc-400 font-semibold">{p.createdAt}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

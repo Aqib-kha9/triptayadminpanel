@@ -9,6 +9,7 @@ interface ListingsModuleProps {
   categoryFilter: string;
   setCategoryFilter: (filter: string) => void;
   setSelectedPropertyForEdit: (property: Property) => void;
+  toggleListingStatus: (listingId: string) => void;
 }
 
 export const ListingsModule: React.FC<ListingsModuleProps> = ({
@@ -17,40 +18,25 @@ export const ListingsModule: React.FC<ListingsModuleProps> = ({
   setAudits,
   categoryFilter,
   setCategoryFilter,
-  setSelectedPropertyForEdit
+  setSelectedPropertyForEdit,
+  toggleListingStatus
 }) => {
   // Helper for conditional classes
   const cn = (...classes: any[]) => classes.filter(Boolean).join(" ");
 
   const handleToggleStatus = (id: string) => {
-    setProperties(prev => prev.map(p => {
-      if (p.id === id) {
-        const nextStatus = p.status === "Active" ? "Suspended" : "Active";
-        
-        // Log telemetry
-        setAudits(logs => [{
-          id: `AUD-${Math.floor(Math.random() * 900) + 100}`,
-          timestamp: new Date().toLocaleTimeString(),
-          type: "Security",
-          event: `Listing ${id} (${p.title}) has been set to ${nextStatus.toUpperCase()} by Admin.`,
-          status: "Success"
-        }, ...logs]);
-
-        return { ...p, status: nextStatus };
-      }
-      return p;
-    }));
+    toggleListingStatus(id);
   };
 
   return (
     <div className="bg-white border border-zinc-100 shadow-sm rounded-[36px] p-6 space-y-6">
-      
+
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-zinc-50">
         <div>
           <h3 className="text-sm font-black text-zinc-900 tracking-tight">Active Listings Directory</h3>
           <p className="text-xs text-zinc-400 font-semibold">Suspend listings or configure custom add-on rates</p>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-black tracking-tight text-zinc-400">Category Filter:</span>
           {["all", "Stay", "Activity"].map(cat => (
@@ -59,8 +45,8 @@ export const ListingsModule: React.FC<ListingsModuleProps> = ({
               onClick={() => setCategoryFilter(cat)}
               className={cn(
                 "px-3 py-1 text-xs font-bold rounded-lg border transition-all",
-                categoryFilter === cat 
-                  ? "bg-gradient-to-r from-primary to-rose-500 text-white border-none shadow-md shadow-primary/10" 
+                categoryFilter === cat
+                  ? "bg-gradient-to-r from-primary to-rose-500 text-white border-none shadow-md shadow-primary/10"
                   : "bg-white text-zinc-500 border-zinc-100 hover:border-zinc-200"
               )}
             >
@@ -86,7 +72,7 @@ export const ListingsModule: React.FC<ListingsModuleProps> = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-50 text-xs font-bold text-zinc-700">
-            {properties.filter(prop => 
+            {properties.filter(prop =>
               categoryFilter === "all" || prop.type === categoryFilter
             ).map(prop => (
               <tr key={prop.id} className="hover:bg-zinc-50/50 transition-colors">
@@ -147,8 +133,8 @@ export const ListingsModule: React.FC<ListingsModuleProps> = ({
                     onClick={() => handleToggleStatus(prop.id)}
                     className={cn(
                       "px-3 py-1.5 rounded-lg text-[10px] font-black tracking-tight border transition-all",
-                      prop.status === "Active" 
-                        ? "bg-rose-50 border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white" 
+                      prop.status === "Active"
+                        ? "bg-rose-50 border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white"
                         : "bg-emerald-50 border-emerald-100 text-emerald-500 hover:bg-emerald-500 hover:text-white"
                     )}
                   >

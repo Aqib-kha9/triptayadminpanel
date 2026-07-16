@@ -241,6 +241,9 @@ export const StaysModule: React.FC<StaysModuleProps> = ({ setAudits }) => {
 
   // ── Change Status (Publish / Draft / Reject) ──
   const handleChangeStatus = async (item: ListingItem, newStatus: "published" | "draft" | "rejected") => {
+    const adminNotes = prompt(`Enter a note/reason for changing the status of "${item.name}" to "${newStatus}" (Optional):`);
+    if (adminNotes === null) return; // Cancelled
+
     const previousState = { ...item };
     setChangingStatusId(item._id);
 
@@ -268,7 +271,7 @@ export const StaysModule: React.FC<StaysModuleProps> = ({ setAudits }) => {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ status: newStatus }),
+          body: JSON.stringify({ status: newStatus, adminNotes }),
         }
       );
       if (!res.ok) {

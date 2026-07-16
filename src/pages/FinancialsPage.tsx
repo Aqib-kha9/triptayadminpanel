@@ -4,7 +4,8 @@ import { FinancialsModule } from "../components/modules/FinancialsModule";
 export default function FinancialsPage() {
     const {
         bookings, commissionRate, setCommissionRate, gstRate, setGstRate,
-        triggerPayoutModal, handleCancelAndRefundBooking, setSelectedInvoiceBooking
+        triggerPayoutModal, handleCancelAndRefundBooking, setSelectedInvoiceBooking,
+        commissionSummary, hostBreakdown, payouts, financialsLoading
     } = useAdmin();
     return (
         <FinancialsModule
@@ -16,6 +17,10 @@ export default function FinancialsPage() {
             triggerPayoutModal={triggerPayoutModal}
             handleCancelAndRefundBooking={handleCancelAndRefundBooking}
             setSelectedInvoiceBooking={setSelectedInvoiceBooking}
+            commissionSummary={commissionSummary}
+            hostBreakdown={hostBreakdown}
+            payouts={payouts}
+            financialsLoading={financialsLoading}
         />
     );
 }

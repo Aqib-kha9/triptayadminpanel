@@ -27,6 +27,7 @@ import FinancialsPage from "./pages/FinancialsPage";
 import DisputesPage from "./pages/DisputesPage";
 import ChatsPage from "./pages/ChatsPage";
 import CouponsPage from "./pages/CouponsPage";
+import CampaignsPage from "./pages/CampaignsPage";
 import AttractionsPage from "./pages/AttractionsPage";
 import SettingsPage from "./pages/SettingsPage";
 import AuditsPage from "./pages/AuditsPage";
@@ -95,6 +96,7 @@ function AdminLayout() {
             <Route path="/disputes" element={<DisputesPage />} />
             <Route path="/chats" element={<ChatsPage />} />
             <Route path="/coupons" element={<CouponsPage />} />
+            <Route path="/campaigns" element={<CampaignsPage />} />
             <Route path="/attractions" element={<AttractionsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/audits" element={<AuditsPage />} />

@@ -1,10 +1,11 @@
 import React from "react";
-import { Plus, Send } from "lucide-react";
-import type { Coupon, Campaign } from "../../types";
+import { Plus, Trash2, Calendar, DollarSign, Users, Percent, Tag } from "lucide-react";
+import type { Coupon, Property, Activity } from "../../types";
 
 interface CouponsModuleProps {
   coupons: Coupon[];
-  campaigns: Campaign[];
+  properties: Property[];
+  activities: Activity[];
   newCouponCode: string;
   setNewCouponCode: (code: string) => void;
   newCouponDiscount: number;
@@ -13,19 +14,20 @@ interface CouponsModuleProps {
   setNewCouponType: (type: any) => void;
   newCouponTarget: string;
   setNewCouponTarget: (target: string) => void;
+  newCouponExpiry: string;
+  setNewCouponExpiry: (expiry: string) => void;
+  newCouponMinOrder: number;
+  setNewCouponMinOrder: (minOrder: number) => void;
+  newCouponLimit: number;
+  setNewCouponLimit: (limit: number) => void;
   handleCreateCoupon: (e: React.FormEvent) => void;
-  newCampTitle: string;
-  setNewCampTitle: (title: string) => void;
-  newCampGroup: "Guests" | "Vendors" | "All Users";
-  setNewCampGroup: (group: any) => void;
-  newCampChannel: "AWS SES Email" | "Twilio WhatsApp" | "Firebase Push";
-  setNewCampChannel: (channel: any) => void;
-  handleLaunchCampaign: (e: React.FormEvent) => void;
+  handleDeleteCoupon: (couponId: string) => Promise<void>;
 }
 
 export const CouponsModule: React.FC<CouponsModuleProps> = ({
   coupons,
-  campaigns,
+  properties,
+  activities,
   newCouponCode,
   setNewCouponCode,
   newCouponDiscount,
@@ -34,27 +36,26 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
   setNewCouponType,
   newCouponTarget,
   setNewCouponTarget,
+  newCouponExpiry,
+  setNewCouponExpiry,
+  newCouponMinOrder,
+  setNewCouponMinOrder,
+  newCouponLimit,
+  setNewCouponLimit,
   handleCreateCoupon,
-  newCampTitle,
-  setNewCampTitle,
-  newCampGroup,
-  setNewCampGroup,
-  newCampChannel,
-  setNewCampChannel,
-  handleLaunchCampaign
+  handleDeleteCoupon
 }) => {
-  // Helper for conditional classes
-  const cn = (...classes: any[]) => classes.filter(Boolean).join(" ");
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
-      {/* Creator Forms */}
+      {/* Coupon Creator Form */}
       <div className="space-y-8 lg:col-span-1">
-        
-        {/* Coupon Creator */}
         <div className="bg-white border border-zinc-100 shadow-sm rounded-[36px] p-6 space-y-6">
           <div>
+            <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-3">
+              <Tag className="w-5 h-5" />
+            </div>
             <h3 className="text-sm font-black text-zinc-900 tracking-tight">Generate Coupon Code</h3>
             <p className="text-xs text-zinc-400 font-semibold">Create global or property-specific discounts</p>
           </div>
@@ -67,20 +68,73 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
                 placeholder="e.g. WELCOME200"
                 value={newCouponCode}
                 onChange={e => setNewCouponCode(e.target.value.toUpperCase())}
+                required
                 className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
               />
             </div>
 
-            <div className="space-y-1">
-              <label className="text-[10px] font-black tracking-normal text-zinc-400">Discount Percent (%)</label>
-              <input 
-                type="number"
-                min="5"
-                max="80"
-                value={newCouponDiscount}
-                onChange={e => setNewCouponDiscount(parseInt(e.target.value))}
-                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-black tracking-normal text-zinc-400">Discount Percent (%)</label>
+                <div className="relative">
+                  <input 
+                    type="number"
+                    min="5"
+                    max="80"
+                    value={newCouponDiscount}
+                    onChange={e => setNewCouponDiscount(parseInt(e.target.value) || 0)}
+                    required
+                    className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl pl-4 pr-8 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
+                  />
+                  <Percent className="w-3.5 h-3.5 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-black tracking-normal text-zinc-400">Min Order Value (₹)</label>
+                <div className="relative">
+                  <input 
+                    type="number"
+                    min="0"
+                    value={newCouponMinOrder}
+                    onChange={e => setNewCouponMinOrder(parseInt(e.target.value) || 0)}
+                    required
+                    className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl pl-6 pr-3 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
+                  />
+                  <span className="text-[10px] font-bold text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2">₹</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-black tracking-normal text-zinc-400">Expiration Date</label>
+                <div className="relative">
+                  <input 
+                    type="date"
+                    min={tomorrow}
+                    value={newCouponExpiry}
+                    onChange={e => setNewCouponExpiry(e.target.value)}
+                    required
+                    className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-3 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] font-black tracking-normal text-zinc-400">Max Usage Limit</label>
+                <div className="relative">
+                  <input 
+                    type="number"
+                    min="1"
+                    value={newCouponLimit}
+                    onChange={e => setNewCouponLimit(parseInt(e.target.value) || 0)}
+                    required
+                    className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl pl-4 pr-8 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
+                  />
+                  <Users className="w-3.5 h-3.5 text-zinc-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                </div>
+              </div>
             </div>
 
             <div className="space-y-1">
@@ -96,16 +150,25 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
               </select>
             </div>
 
-            <div className="space-y-1">
-              <label className="text-[10px] font-black tracking-normal text-zinc-400">Target Listing Name (if specific)</label>
-              <input 
-                type="text"
-                placeholder="e.g. The Creek Villa"
-                value={newCouponTarget}
-                onChange={e => setNewCouponTarget(e.target.value)}
-                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
-              />
-            </div>
+            {newCouponType !== "Global" && (
+              <div className="space-y-1">
+                <label className="text-[10px] font-black tracking-normal text-zinc-400">
+                  {newCouponType === "Stay-Specific" ? "Select Stay Property" : "Select Activity Experience"}
+                </label>
+                <select 
+                  value={newCouponTarget}
+                  onChange={e => setNewCouponTarget(e.target.value)}
+                  required
+                  className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
+                >
+                  <option value="">-- Select Target --</option>
+                  {newCouponType === "Stay-Specific" 
+                    ? properties.map(p => <option key={p.id} value={p.id}>{p.title}</option>)
+                    : activities.map(a => <option key={a.id} value={a.id}>{a.title}</option>)
+                  }
+                </select>
+              </div>
+            )}
 
             <button 
               type="submit"
@@ -115,70 +178,13 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
             </button>
           </form>
         </div>
-
-        {/* Promotional Campaign Scheduler */}
-        <div className="bg-white border border-zinc-100 shadow-sm rounded-[36px] p-6 space-y-6">
-          <div>
-            <h3 className="text-sm font-black text-zinc-900 tracking-tight">Dispatch Campaign</h3>
-            <p className="text-xs text-zinc-400 font-semibold">Bulk SMS, email, or Firebase push alerts</p>
-          </div>
-
-          <form onSubmit={handleLaunchCampaign} className="space-y-4">
-            <div className="space-y-1">
-              <label className="text-[10px] font-black tracking-normal text-zinc-400">Campaign Title</label>
-              <input 
-                type="text"
-                placeholder="e.g. Special Activity Promo"
-                value={newCampTitle}
-                onChange={e => setNewCampTitle(e.target.value)}
-                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-black tracking-normal text-zinc-400">Target Audience Group</label>
-              <select 
-                value={newCampGroup}
-                onChange={e => setNewCampGroup(e.target.value as any)}
-                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
-              >
-                <option value="Guests">Traveler Guests Segment</option>
-                <option value="Vendors">Vendor Host Segment</option>
-                <option value="All Users">All Registered Users</option>
-              </select>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-black tracking-normal text-zinc-400">Gateway Channel Dispatcher</label>
-              <select 
-                value={newCampChannel}
-                onChange={e => setNewCampChannel(e.target.value as any)}
-                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
-              >
-                <option value="AWS SES Email">AWS SES Transactional Email</option>
-                <option value="Twilio WhatsApp">Twilio WhatsApp business blast</option>
-                <option value="Firebase Push">Firebase Cloud Messaging (FCM)</option>
-              </select>
-            </div>
-
-            <button 
-              type="submit"
-              className="w-full py-3 rounded-2xl bg-gradient-to-r from-secondary to-teal-600 hover:opacity-95 text-white text-xs font-bold tracking-tight shadow-md shadow-secondary/20 transition-all flex items-center justify-center gap-1.5"
-            >
-              <Send className="w-4 h-4" /> Blast Campaign
-            </button>
-          </form>
-        </div>
-
       </div>
 
-      {/* Lists display (Coupons lists and Campaigns live status log details) */}
+      {/* Active Coupons catalog */}
       <div className="lg:col-span-2 space-y-8">
-        
-        {/* Active Coupons list */}
         <div className="bg-white border border-zinc-100 shadow-sm rounded-[36px] p-6 space-y-6">
           <div>
-            <h3 className="text-sm font-black text-zinc-900 tracking-tight">Active Coupons catalog</h3>
+            <h3 className="text-sm font-black text-zinc-900 tracking-tight">Active Coupons Catalog</h3>
             <p className="text-xs text-zinc-400 font-semibold">Active globally redeemable coupon vouchers</p>
           </div>
 
@@ -186,81 +192,57 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
             {coupons.map(cpn => (
               <div 
                 key={cpn.id} 
-                className="p-5 rounded-3xl border border-zinc-100 bg-zinc-50/50 flex items-center justify-between gap-4"
+                className="p-5 rounded-3xl border border-zinc-100 bg-zinc-50/50 flex flex-col justify-between relative group hover:shadow-md transition-all duration-300 overflow-hidden"
               >
-                <div className="space-y-1.5">
-                  <div className="flex items-center gap-2">
-                    <span className="bg-gradient-to-r from-primary to-rose-500 text-white text-[10px] font-mono font-black px-2.5 py-1 rounded-xl tracking-wider shadow-sm shadow-primary/10">
-                      {cpn.code}
-                    </span>
-                    <span className="text-[9px] font-bold text-zinc-500">{cpn.type}</span>
+                {/* Visual coupon left border styling */}
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 bg-primary rounded-r-full" />
+                
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-2 flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-gradient-to-r from-primary to-rose-500 text-white text-[10px] font-mono font-black px-2.5 py-1 rounded-xl tracking-wider shadow-sm shadow-primary/10">
+                        {cpn.code}
+                      </span>
+                      <span className="text-[9px] font-black text-zinc-400 bg-zinc-100 px-2 py-0.5 rounded-lg truncate">
+                        {cpn.type}
+                      </span>
+                    </div>
+                    <p className="text-[11px] font-black text-zinc-800 truncate">{cpn.targetName}</p>
                   </div>
-                  <p className="text-[10px] font-black text-zinc-900 truncate max-w-[140px]">{cpn.targetName}</p>
-                  <p className="text-[9px] text-zinc-400 font-semibold">Expires: {cpn.expiryDate}</p>
+                  
+                  <div className="text-right shrink-0">
+                    <span className="text-2xl font-black text-primary">{cpn.discountPercent}%</span>
+                    <p className="text-[8px] font-black text-emerald-600 tracking-wider">OFF VOUCHER</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="text-xl font-black text-primary">{cpn.discountPercent}%</span>
-                  <p className="text-[8px] font-bold text-emerald-600">OFF VOUCHER</p>
+
+                <div className="mt-4 pt-3 border-t border-zinc-100/60 flex items-center justify-between gap-4 text-zinc-400">
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-1 text-zinc-400">
+                      <Calendar className="w-3 h-3 text-zinc-300" />
+                      <span className="text-[9px] font-bold">Expires: {cpn.expiryDate}</span>
+                    </div>
+                    {cpn.usedCount !== undefined && (
+                      <div className="flex items-center gap-1 text-zinc-500">
+                        <Users className="w-3 h-3 text-zinc-300" />
+                        <span className="text-[9px] font-semibold">Redeemed: {cpn.usedCount}{cpn.usageLimit ? ` / ${cpn.usageLimit}` : " (Unlimited)"}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => handleDeleteCoupon(cpn.id)}
+                    className="p-1.5 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                    title="Delete Coupon"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         </div>
-
-        {/* Live campaigns telemetry status log */}
-        <div className="bg-white border border-zinc-100 shadow-sm rounded-[36px] p-6 space-y-6">
-          <div>
-            <h3 className="text-sm font-black text-zinc-900 tracking-tight">Campaign Dispatch Analytics</h3>
-            <p className="text-xs text-zinc-400 font-semibold">Track bulk notification queue executions, open and click margins</p>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-zinc-50 text-[10px] font-black tracking-tight text-zinc-400">
-                  <th className="py-4 px-4">Campaign Title</th>
-                  <th className="py-4 px-4">Audience</th>
-                  <th className="py-4 px-4">Gateway</th>
-                  <th className="py-4 px-4">Analytics (Sent/Opens/Clicks)</th>
-                  <th className="py-4 px-4 text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-50 text-xs font-bold text-zinc-700">
-                {campaigns.map(cmp => (
-                  <tr key={cmp.id} className="hover:bg-zinc-50/50 transition-colors">
-                    <td className="py-4 px-4 text-zinc-950 font-extrabold">{cmp.title}</td>
-                    <td className="py-4 px-4 text-zinc-500">{cmp.targetGroup}</td>
-                    <td className="py-4 px-4 font-mono text-[10px] text-zinc-400">{cmp.channel}</td>
-                    <td className="py-4 px-4">
-                      {cmp.status === "Sent" ? (
-                        <div className="flex gap-2 text-[10px] font-black">
-                          <span className="text-zinc-500">S: {cmp.analytics.sent}</span>
-                          <span className="text-blue-500">O: {cmp.analytics.opens}</span>
-                          <span className="text-emerald-500">C: {cmp.analytics.clicks}</span>
-                        </div>
-                      ) : (
-                        <span className="italic text-zinc-300">Pending Execution</span>
-                      )}
-                    </td>
-                    <td className="py-4 px-4 text-right">
-                      <span className={cn(
-                        "text-[8px] font-black tracking-tight px-2.5 py-0.5 rounded",
-                        cmp.status === "Sent" && "bg-emerald-50 text-emerald-600 border border-emerald-100",
-                        cmp.status === "Scheduled" && "bg-blue-50 text-blue-600 border border-blue-100",
-                        cmp.status === "Draft" && "bg-zinc-100 text-zinc-400"
-                      )}>
-                        {cmp.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
       </div>
-
     </div>
   );
 };

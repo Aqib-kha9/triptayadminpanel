@@ -3,17 +3,19 @@ import { CouponsModule } from "../components/modules/CouponsModule";
 
 export default function CouponsPage() {
     const {
-        coupons, campaigns,
+        coupons, properties, activities,
         newCouponCode, setNewCouponCode, newCouponDiscount, setNewCouponDiscount,
         newCouponType, setNewCouponType, newCouponTarget, setNewCouponTarget,
-        handleCreateCoupon,
-        newCampTitle, setNewCampTitle, newCampGroup, setNewCampGroup,
-        newCampChannel, setNewCampChannel, handleLaunchCampaign
+        newCouponExpiry, setNewCouponExpiry, newCouponMinOrder, setNewCouponMinOrder,
+        newCouponLimit, setNewCouponLimit,
+        handleCreateCoupon, handleDeleteCoupon
     } = useAdmin();
+
     return (
         <CouponsModule
             coupons={coupons}
-            campaigns={campaigns}
+            properties={properties}
+            activities={activities}
             newCouponCode={newCouponCode}
             setNewCouponCode={setNewCouponCode}
             newCouponDiscount={newCouponDiscount}
@@ -22,14 +24,14 @@ export default function CouponsPage() {
             setNewCouponType={setNewCouponType}
             newCouponTarget={newCouponTarget}
             setNewCouponTarget={setNewCouponTarget}
+            newCouponExpiry={newCouponExpiry}
+            setNewCouponExpiry={setNewCouponExpiry}
+            newCouponMinOrder={newCouponMinOrder}
+            setNewCouponMinOrder={setNewCouponMinOrder}
+            newCouponLimit={newCouponLimit}
+            setNewCouponLimit={setNewCouponLimit}
             handleCreateCoupon={handleCreateCoupon}
-            newCampTitle={newCampTitle}
-            setNewCampTitle={setNewCampTitle}
-            newCampGroup={newCampGroup}
-            setNewCampGroup={setNewCampGroup}
-            newCampChannel={newCampChannel}
-            setNewCampChannel={setNewCampChannel}
-            handleLaunchCampaign={handleLaunchCampaign}
+            handleDeleteCoupon={handleDeleteCoupon}
         />
     );
 }
