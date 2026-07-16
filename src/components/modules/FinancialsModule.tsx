@@ -85,7 +85,6 @@ export const FinancialsModule: React.FC<FinancialsModuleProps> = ({
   const totalFinancialVolume = activeBookings.reduce((sum, b) => sum + b.amount, 0);
   const pendingCommissionTotal = commissionSummary?.pendingCommission ?? 0;
   const processedCommissionTotal = commissionSummary?.processedCommission ?? 0;
-  const totalTransactions = commissionSummary?.totalTransactions ?? activeBookings.length;
 
   return (
     <div className="space-y-8">

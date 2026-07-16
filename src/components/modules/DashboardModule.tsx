@@ -70,7 +70,6 @@ export const DashboardModule: React.FC<DashboardModuleProps> = ({
 }) => {
   // Use real dashboard stats if available, otherwise fall back to computed values
   const stats = dashboardStats;
-  const activeBookings = stats ? stats.counts.activeBookings : bookings.filter(b => b.status !== "Cancelled").length;
   const totalFinancialVolume = stats ? stats.revenue : bookings.filter(b => b.status !== "Cancelled").reduce((sum, b) => sum + b.amount, 0);
   const platformRevenueCalculated = stats ? Math.round(stats.revenue * (commissionRate / 100)) : bookings.filter(b => b.status !== "Cancelled").reduce((sum, b) => sum + (b.amount * (commissionRate / 100)), 0);
   const pendingApprovalsCount = stats ? stats.counts.pendingKyc : applications.filter(app => app.status === "Pending").length;

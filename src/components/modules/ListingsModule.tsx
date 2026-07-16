@@ -14,8 +14,6 @@ interface ListingsModuleProps {
 
 export const ListingsModule: React.FC<ListingsModuleProps> = ({
   properties,
-  setProperties,
-  setAudits,
   categoryFilter,
   setCategoryFilter,
   setSelectedPropertyForEdit,

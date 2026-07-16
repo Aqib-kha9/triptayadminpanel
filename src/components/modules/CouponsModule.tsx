@@ -1,5 +1,5 @@
 import React from "react";
-import { Plus, Trash2, Calendar, DollarSign, Users, Percent, Tag } from "lucide-react";
+import { Plus, Trash2, Calendar, Users, Percent, Tag } from "lucide-react";
 import type { Coupon, Property, Activity } from "../../types";
 
 interface CouponsModuleProps {
@@ -63,7 +63,7 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
           <form onSubmit={handleCreateCoupon} className="space-y-4">
             <div className="space-y-1">
               <label className="text-[10px] font-black tracking-normal text-zinc-400">Coupon Promo Code</label>
-              <input 
+              <input
                 type="text"
                 placeholder="e.g. WELCOME200"
                 value={newCouponCode}
@@ -77,7 +77,7 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
               <div className="space-y-1">
                 <label className="text-[10px] font-black tracking-normal text-zinc-400">Discount Percent (%)</label>
                 <div className="relative">
-                  <input 
+                  <input
                     type="number"
                     min="5"
                     max="80"
@@ -93,7 +93,7 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
               <div className="space-y-1">
                 <label className="text-[10px] font-black tracking-normal text-zinc-400">Min Order Value (₹)</label>
                 <div className="relative">
-                  <input 
+                  <input
                     type="number"
                     min="0"
                     value={newCouponMinOrder}
@@ -110,7 +110,7 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
               <div className="space-y-1">
                 <label className="text-[10px] font-black tracking-normal text-zinc-400">Expiration Date</label>
                 <div className="relative">
-                  <input 
+                  <input
                     type="date"
                     min={tomorrow}
                     value={newCouponExpiry}
@@ -124,7 +124,7 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
               <div className="space-y-1">
                 <label className="text-[10px] font-black tracking-normal text-zinc-400">Max Usage Limit</label>
                 <div className="relative">
-                  <input 
+                  <input
                     type="number"
                     min="1"
                     value={newCouponLimit}
@@ -139,7 +139,7 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
 
             <div className="space-y-1">
               <label className="text-[10px] font-black tracking-normal text-zinc-400">Coupon Scope</label>
-              <select 
+              <select
                 value={newCouponType}
                 onChange={e => setNewCouponType(e.target.value as any)}
                 className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
@@ -155,14 +155,14 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
                 <label className="text-[10px] font-black tracking-normal text-zinc-400">
                   {newCouponType === "Stay-Specific" ? "Select Stay Property" : "Select Activity Experience"}
                 </label>
-                <select 
+                <select
                   value={newCouponTarget}
                   onChange={e => setNewCouponTarget(e.target.value)}
                   required
                   className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-primary focus:ring-1 focus:ring-primary/10 transition-all"
                 >
                   <option value="">-- Select Target --</option>
-                  {newCouponType === "Stay-Specific" 
+                  {newCouponType === "Stay-Specific"
                     ? properties.map(p => <option key={p.id} value={p.id}>{p.title}</option>)
                     : activities.map(a => <option key={a.id} value={a.id}>{a.title}</option>)
                   }
@@ -170,7 +170,7 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
               </div>
             )}
 
-            <button 
+            <button
               type="submit"
               className="w-full py-3 rounded-2xl bg-gradient-to-r from-primary to-rose-500 hover:opacity-95 text-white text-xs font-bold tracking-tight shadow-md shadow-primary/20 transition-all flex items-center justify-center gap-1.5"
             >
@@ -190,13 +190,13 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {coupons.map(cpn => (
-              <div 
-                key={cpn.id} 
+              <div
+                key={cpn.id}
                 className="p-5 rounded-3xl border border-zinc-100 bg-zinc-50/50 flex flex-col justify-between relative group hover:shadow-md transition-all duration-300 overflow-hidden"
               >
                 {/* Visual coupon left border styling */}
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-10 bg-primary rounded-r-full" />
-                
+
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-2 flex-1 min-w-0">
                     <div className="flex items-center gap-2">
@@ -209,7 +209,7 @@ export const CouponsModule: React.FC<CouponsModuleProps> = ({
                     </div>
                     <p className="text-[11px] font-black text-zinc-800 truncate">{cpn.targetName}</p>
                   </div>
-                  
+
                   <div className="text-right shrink-0">
                     <span className="text-2xl font-black text-primary">{cpn.discountPercent}%</span>
                     <p className="text-[8px] font-black text-emerald-600 tracking-wider">OFF VOUCHER</p>

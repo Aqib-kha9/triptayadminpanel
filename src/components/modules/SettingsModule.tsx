@@ -11,13 +11,8 @@ import {
   X,
   Link2,
   Mail,
-  Key,
   Layout,
   MessageSquare,
-  AlertTriangle,
-  Server,
-  Database,
-  Search,
   CreditCard,
   CheckCircle2,
   XCircle,
@@ -403,7 +398,7 @@ export const SettingsModule: React.FC<SettingsModuleProps> = ({
                       }`} />
                   </button>
                 </div>
-                
+
                 {whatsappNotificationsEnabled && (
                   <div className="bg-zinc-50 border border-zinc-100 rounded-2xl p-4 space-y-3 mt-3">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
