@@ -1,0 +1,280 @@
+import type {
+  PlatformUser,
+  HostApplication,
+  Property,
+  SystemBooking,
+  Coupon,
+  Campaign,
+  TouristAttraction,
+  AuditLog,
+  DisputeTicket,
+  ChatRoom
+} from "../types";
+
+export const INITIAL_USERS: PlatformUser[] = [
+  { 
+    id: "USR-001", 
+    name: "Meera Kapoor", 
+    email: "meera.k@example.com", 
+    phone: "+91 98123 45678", 
+    role: "Dual Mode", 
+    status: "Active", 
+    walletBalance: 4500, 
+    joinedDate: "12 January, 2026",
+    panNumber: "ABCDE1234F",
+    gstin: "02ABCDE1234F1Z4",
+    bankAccount: "987654321098 (State Bank of India)",
+    bankIFSC: "SBIN0001234",
+    kycStatus: "Approved"
+  },
+  { 
+    id: "USR-002", 
+    name: "Anuj Sharma", 
+    email: "anuj.sharma@example.com", 
+    phone: "+91 99112 23344", 
+    role: "Guest", 
+    status: "Active", 
+    walletBalance: 1200, 
+    joinedDate: "05 February, 2026",
+    panNumber: "PQRST5678A",
+    gstin: "07PQRST5678A2Z1",
+    bankAccount: "112233445566 (HDFC Bank)",
+    bankIFSC: "HDFC0000240",
+    kycStatus: "Approved"
+  },
+  { 
+    id: "USR-003", 
+    name: "Karan Singh", 
+    email: "karan.singh@example.com", 
+    phone: "+91 98765 12345", 
+    role: "Vendor", 
+    status: "Active", 
+    walletBalance: 0, 
+    joinedDate: "15 May, 2026",
+    panNumber: "EPVPN1123P",
+    gstin: "08EPVPN1123P1Z5",
+    bankAccount: "123456789012 (Punjab National Bank)",
+    bankIFSC: "PUNB0012345",
+    kycStatus: "Approved"
+  },
+  { 
+    id: "USR-004", 
+    name: "Kabir Roy", 
+    email: "kabir.roy@example.com", 
+    phone: "+91 90909 09090", 
+    role: "Guest", 
+    status: "Blocked", 
+    walletBalance: 250, 
+    joinedDate: "10 March, 2026",
+    panNumber: "VWXYZ9876K",
+    gstin: "27VWXYZ9876K1Z9",
+    bankAccount: "445566778899 (ICICI Bank)",
+    bankIFSC: "ICIC0000007",
+    kycStatus: "Rejected"
+  },
+  { 
+    id: "USR-005", 
+    name: "Sneha Reddy", 
+    email: "sneha.r@example.com", 
+    phone: "+91 88877 66554", 
+    role: "Dual Mode", 
+    status: "Active", 
+    walletBalance: 8000, 
+    joinedDate: "01 April, 2026",
+    panNumber: "WXYZP9876Q",
+    gstin: "05WXYZP9876Q1Z3",
+    bankAccount: "554433221100 (HDFC Bank)",
+    bankIFSC: "HDFC0000888",
+    kycStatus: "Pending"
+  }
+];
+
+export const INITIAL_APPLICATIONS: HostApplication[] = [
+  {
+    _id: "app-9012",
+    id: "APP-9012",
+    name: "Aryan Singh",
+    email: "aryan.singh@example.com",
+    phone: "+91 98765 43210",
+    role: "Vendor",
+    submittedDate: "Today, 04:30 AM",
+    status: "Pending",
+    panNumber: "ABCDE1234F",
+    gstin: "02ABCDE1234F1Z4",
+    bankAccount: "987654321098 (State Bank of India)",
+    bankIFSC: "SBIN0001234",
+    aadharFront: null,
+    aadharBack: null,
+    panCardImage: null,
+    kycStatus: "Pending",
+  },
+  {
+    _id: "app-9011",
+    id: "APP-9011",
+    name: "Sneha Reddy",
+    email: "sneha.r@example.com",
+    phone: "+91 88877 66554",
+    role: "Vendor",
+    submittedDate: "Yesterday",
+    status: "Pending",
+    panNumber: "WXYZP9876Q",
+    gstin: "05WXYZP9876Q1Z3",
+    bankAccount: "554433221100 (HDFC Bank)",
+    bankIFSC: "HDFC0000888",
+    aadharFront: null,
+    aadharBack: null,
+    panCardImage: null,
+    kycStatus: "Pending",
+  },
+  {
+    _id: "app-9010",
+    id: "APP-9010",
+    name: "Rakesh Negi",
+    email: "rakesh.negi@example.com",
+    phone: "+91 99887 76655",
+    role: "Vendor",
+    submittedDate: "16 May, 2026",
+    status: "Approved",
+    panNumber: "KLMNP5544R",
+    gstin: "05KLMNP5544R1Z2",
+    bankAccount: "112233445566 (ICICI Bank)",
+    bankIFSC: "ICIC0000104",
+    aadharFront: null,
+    aadharBack: null,
+    panCardImage: null,
+    kycStatus: "Approved",
+  },
+  {
+    _id: "app-9009",
+    id: "APP-9009",
+    name: "Vikram Rathore",
+    email: "vikram.r@example.com",
+    phone: "+91 88776 65544",
+    role: "Vendor",
+    submittedDate: "12 May, 2026",
+    status: "Rejected",
+    panNumber: "EPVPN1123P",
+    gstin: "08EPVPN1123P1Z5",
+    bankAccount: "123456789012 (Punjab National Bank)",
+    bankIFSC: "PUNB0012345",
+    aadharFront: null,
+    aadharBack: null,
+    panCardImage: null,
+    kycStatus: "Rejected",
+  }
+];
+
+export const INITIAL_PROPERTIES: Property[] = [
+  { id: "PROP-001", title: "The Creek Villa: A Riverside Sanctuary", hostName: "Aryan Singh", location: "Manali, HP", type: "Stay", price: 4500, rating: "4.9", status: "Active", breakfastPrice: 350, dinnerPrice: 650, parkingAvailable: true },
+  { id: "PROP-002", title: "Mountain View Cottage", hostName: "Sneha Reddy", location: "Rishikesh, UK", type: "Stay", price: 3200, rating: "4.7", status: "Active", breakfastPrice: 250, dinnerPrice: 500, parkingAvailable: true },
+  { id: "PROP-003", title: "Ganga River Rafting Adventure", hostName: "Rakesh Negi", location: "Rishikesh, UK", type: "Activity", category: "Adventure", price: 1200, rating: "4.8", status: "Active" },
+  { id: "PROP-004", title: "Paragliding Joyride & Camp", hostName: "Amit Thakur", location: "Bir Billing, HP", type: "Activity", category: "Adventure", price: 2500, rating: "4.6", status: "Active" },
+  { id: "PROP-005", title: "Desert Glamping & Jeep Safari", hostName: "Kailash Bhati", location: "Jaisalmer, RJ", type: "Stay", price: 5500, rating: "4.9", status: "Active", breakfastPrice: 400, dinnerPrice: 800, parkingAvailable: false }
+];
+
+export const INITIAL_BOOKINGS: SystemBooking[] = [
+  { id: "BOK-108", guestName: "Meera Kapoor", propertyName: "The Creek Villa", hostName: "Aryan Singh", amount: 22500, date: "Today, 10:45 AM", status: "Completed" },
+  { id: "BOK-107", guestName: "Anuj Sharma", propertyName: "Ganga River Rafting", hostName: "Rakesh Negi", amount: 2400, date: "Yesterday", status: "Completed" },
+  { id: "BOK-106", guestName: "Kabir Roy", propertyName: "Mountain View Cottage", hostName: "Sneha Reddy", amount: 16000, date: "15 May, 2026", status: "Upcoming" },
+  { id: "BOK-105", guestName: "Shreya Gupta", propertyName: "Desert Glamping Stay", hostName: "Kailash Bhati", amount: 11000, date: "14 May, 2026", status: "Completed" },
+  { id: "BOK-104", guestName: "Nikhil Dev", propertyName: "Paragliding Joyride", hostName: "Amit Thakur", amount: 5000, date: "12 May, 2026", status: "Cancelled" }
+];
+
+export const INITIAL_COUPONS: Coupon[] = [
+  { id: "CPN-01", code: "WELCOME200", discountPercent: 15, type: "Global", targetName: "All Stays & Tours", expiryDate: "30 June, 2026", status: "Active" },
+  { id: "CPN-02", code: "HIMALAYANCOZY", discountPercent: 20, type: "Stay-Specific", targetName: "The Creek Villa", expiryDate: "10 June, 2026", status: "Active" },
+  { id: "CPN-03", code: "RAFT10", discountPercent: 10, type: "Activity-Specific", targetName: "Ganga River Rafting", expiryDate: "05 June, 2026", status: "Active" }
+];
+
+export const INITIAL_CAMPAIGNS: Campaign[] = [
+  { id: "CMP-01", title: "Summer Retreat Email Campaign", targetGroup: "Guests", channel: "AWS SES Email", scheduledTime: "20 May, 2026 - 10:00 AM", status: "Scheduled", analytics: { sent: 0, opens: 0, clicks: 0 } },
+  { id: "CMP-02", title: "Monsoon Stay Offer Push Alert", targetGroup: "All Users", channel: "Firebase Push", scheduledTime: "18 May, 2026 (Live)", status: "Sent", analytics: { sent: 12500, opens: 4320, clicks: 1250 } },
+  { id: "CMP-03", title: "Host KYC Mandatory Push Alert", targetGroup: "Vendors", channel: "Twilio WhatsApp", scheduledTime: "Immediate", status: "Draft", analytics: { sent: 0, opens: 0, clicks: 0 } }
+];
+
+export const INITIAL_ATTRACTIONS: TouristAttraction[] = [
+  { _id: "atr-01", id: "ATR-01", name: "Solang Valley Snow Point", slug: "solang-valley", state: "Himachal Pradesh", city: "Manali", image: "", lat: 32.3167, lng: 77.15, coordinates: "32.3167° N, 77.1500° E", description: "", isActive: true, popularityScore: 95, nearbyStaysCount: 8, category: "Adventure" },
+  { _id: "atr-02", id: "ATR-02", name: "Triveni Ghat Evening Aarti", slug: "triveni-ghat", state: "Uttarakhand", city: "Rishikesh", image: "", lat: 30.1264, lng: 78.3011, coordinates: "30.1264° N, 78.3011° E", description: "", isActive: true, popularityScore: 90, nearbyStaysCount: 12, category: "Spiritual" },
+  { _id: "atr-03", id: "ATR-03", name: "Alleppey Houseboat Terminal", slug: "alleppey-houseboat", state: "Kerala", city: "Alleppey", image: "", lat: 9.4981, lng: 76.3388, coordinates: "9.4981° N, 76.3388° E", description: "", isActive: true, popularityScore: 88, nearbyStaysCount: 5, category: "Nature" }
+];
+
+export const INITIAL_AUDITS: AuditLog[] = [
+  { id: "AUD-001", timestamp: "05:30:12 AM", type: "Webhook", event: "Razorpay Payment success hook: pay_Pz92318xs (₹22,500)", status: "Success" },
+  { id: "AUD-002", timestamp: "05:31:02 AM", type: "SQS Queue", event: "AWS SES Dispatch: Booking confirmation sent to meera@gmail.com", status: "Success" },
+  { id: "AUD-003", timestamp: "05:32:45 AM", type: "Security", event: "API Rate-limiting warning triggered for IP 192.168.1.108", status: "Success" },
+  { id: "AUD-004", timestamp: "05:34:11 AM", type: "Webhook", event: "Razorpay refund event failure: ref_H77123s", status: "Failed" },
+  { id: "AUD-005", timestamp: "05:36:20 AM", type: "Security", event: "Blocked rogue access attempt to /api/admin/configs from IP 45.2.12.9", status: "Blocked" }
+];
+
+export const INITIAL_DISPUTES: DisputeTicket[] = [
+  {
+    id: "DSP-101",
+    bookingId: "BOK-108",
+    guestName: "Meera Kapoor",
+    hostName: "Aryan Singh",
+    issue: "Guest claims the room heating was non-functional in sub-zero Manali weather. Requested full refund.",
+    amount: 22500,
+    status: "Pending",
+    createdAt: "Today, 08:30 AM"
+  },
+  {
+    id: "DSP-102",
+    bookingId: "BOK-104",
+    guestName: "Nikhil Dev",
+    hostName: "Amit Thakur",
+    issue: "Paragliding activity cancelled due to high winds, but host refuses to refund full amount.",
+    amount: 5000,
+    status: "Pending",
+    createdAt: "Yesterday, 04:15 PM"
+  },
+  {
+    id: "DSP-103",
+    bookingId: "BOK-105",
+    guestName: "Shreya Gupta",
+    hostName: "Kailash Bhati",
+    issue: "AC in desert luxury glamping tent leaked and caused water damage to guest's camera. Seeking compensation.",
+    amount: 11000,
+    status: "Resolved-PaidVendor",
+    createdAt: "18 May, 2026"
+  }
+];
+
+export const INITIAL_CHATROOMS: ChatRoom[] = [
+  {
+    id: "CHT-001",
+    guestName: "Meera Kapoor",
+    hostName: "Aryan Singh",
+    propertyName: "The Creek Villa: A Riverside Sanctuary",
+    lastMessage: "Is early check-in possible tomorrow around 9 AM?",
+    unreadCount: 2,
+    messages: [
+      { id: "m1", sender: "Guest", text: "Hello Aryan, looking forward to our stay at the Creek Villa.", timestamp: "Yesterday, 02:00 PM" },
+      { id: "m2", sender: "Host", text: "Welcome Meera! We are preparing the villa for you.", timestamp: "Yesterday, 02:30 PM" },
+      { id: "m3", sender: "Guest", text: "Is early check-in possible tomorrow around 9 AM?", timestamp: "Today, 08:00 AM" }
+    ]
+  },
+  {
+    id: "CHT-002",
+    guestName: "Anuj Sharma",
+    hostName: "Rakesh Negi",
+    propertyName: "Ganga River Rafting Adventure",
+    lastMessage: "Yes, meeting point is at the tapovan bridge at 8 AM.",
+    unreadCount: 0,
+    messages: [
+      { id: "m4", sender: "Guest", text: "Hi Rakesh, where is the exact starting point for rafting?", timestamp: "Yesterday, 06:15 PM" },
+      { id: "m5", sender: "Host", text: "Yes, meeting point is at the tapovan bridge at 8 AM.", timestamp: "Yesterday, 06:30 PM" }
+    ]
+  },
+  {
+    id: "CHT-003",
+    guestName: "Kabir Roy",
+    hostName: "Sneha Reddy",
+    propertyName: "Mountain View Cottage",
+    lastMessage: "No problem. Let us know if you need pick up.",
+    unreadCount: 0,
+    messages: [
+      { id: "m6", sender: "Guest", text: "Hey Sneha, our train is delayed. We will arrive late by 2 hours.", timestamp: "15 May, 2026, 05:00 PM" },
+      { id: "m7", sender: "Host", text: "No problem. Let us know if you need pick up.", timestamp: "15 May, 2026, 05:15 PM" }
+    ]
+  }
+];
