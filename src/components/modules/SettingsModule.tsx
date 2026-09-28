@@ -75,8 +75,20 @@ interface GatewayTestResult {
 interface SettingsModuleProps {
   commissionRate: number;
   setCommissionRate: (rate: number) => void;
+  isPayAtPropertyEnabled: boolean;
+  setIsPayAtPropertyEnabled: (enabled: boolean) => void;
   gstRate: number;
   setGstRate: (rate: number) => void;
+  gstLuxuryRate: number;
+  setGstLuxuryRate: (rate: number) => void;
+  gstLuxuryThreshold: number;
+  setGstLuxuryThreshold: (val: number) => void;
+  tcsRate: number;
+  setTcsRate: (rate: number) => void;
+  tdsRate: number;
+  setTdsRate: (rate: number) => void;
+  platformGstRate: number;
+  setPlatformGstRate: (rate: number) => void;
   platformFeeRate: number;
   setPlatformFeeRate: (rate: number) => void;
   payoutMinThreshold: number;
@@ -126,8 +138,20 @@ interface SettingsModuleProps {
 export const SettingsModule: React.FC<SettingsModuleProps> = ({
   commissionRate,
   setCommissionRate,
+  isPayAtPropertyEnabled,
+  setIsPayAtPropertyEnabled,
   gstRate,
   setGstRate,
+  gstLuxuryRate,
+  setGstLuxuryRate,
+  gstLuxuryThreshold,
+  setGstLuxuryThreshold,
+  tcsRate,
+  setTcsRate,
+  tdsRate,
+  setTdsRate,
+  platformGstRate,
+  setPlatformGstRate,
   platformFeeRate,
   setPlatformFeeRate,
   payoutMinThreshold,
@@ -254,14 +278,14 @@ export const SettingsModule: React.FC<SettingsModuleProps> = ({
               {/* Commission Slider */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-xs font-bold text-zinc-700">
-                  <span>Host Commission Fee</span>
+                  <span>Platform Commission (Host Deduction)</span>
                   <span className="text-primary font-black bg-primary/5 border border-primary/10 px-2.5 py-1 rounded-xl">
                     {commissionRate}%
                   </span>
                 </div>
                 <input
                   type="range"
-                  min="5"
+                  min="0"
                   max="30"
                   value={commissionRate}
                   onChange={(e) => {
@@ -273,10 +297,32 @@ export const SettingsModule: React.FC<SettingsModuleProps> = ({
                 <p className="text-[9px] text-zinc-400 font-bold">Rate cut deducted from host homestays and experience bookings.</p>
               </div>
 
+              {/* Pay At Property Toggle */}
+              <div className="bg-white p-6 rounded-2xl border border-zinc-100/80 shadow-sm flex items-center justify-between">
+                <div>
+                  <h4 className="font-semibold text-zinc-800 text-sm mb-1 flex items-center gap-2">
+                    <span className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">🏨</span> Allow "Pay at Property"
+                  </h4>
+                  <p className="text-xs text-zinc-500 font-medium">Globally enable or disable the option for customers to pay at the property.</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={isPayAtPropertyEnabled}
+                    onChange={(e) => {
+                      setIsPayAtPropertyEnabled(e.target.checked);
+                      triggerSaveAlert(`Pay at Property ${e.target.checked ? 'Enabled' : 'Disabled'} successfully.`);
+                    }}
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+
               {/* GST rate Slider */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-xs font-bold text-zinc-700">
-                  <span>GST Rate (Goods & Services Tax)</span>
+                  <span>Base GST Rate (for rent ≤ ₹{gstLuxuryThreshold})</span>
                   <span className="text-rose-500 font-black bg-rose-50 border border-rose-100 px-2.5 py-1 rounded-xl">
                     {gstRate}%
                   </span>
@@ -288,11 +334,121 @@ export const SettingsModule: React.FC<SettingsModuleProps> = ({
                   value={gstRate}
                   onChange={(e) => {
                     setGstRate(parseInt(e.target.value));
-                    triggerSaveAlert("GST tax config updated successfully.");
+                    triggerSaveAlert("Base GST tax config updated successfully.");
                   }}
                   className="w-full h-1.5 bg-zinc-100 rounded-lg appearance-none cursor-pointer accent-rose-500"
                 />
-                <p className="text-[9px] text-zinc-400 font-bold">Standard Indian hospitality GST surcharge applied during checkout.</p>
+                <p className="text-[9px] text-zinc-400 font-bold">Standard accommodation & base activity GST rate.</p>
+              </div>
+
+              {/* Luxury GST rate Slider */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs font-bold text-zinc-700">
+                  <span>Premium GST Rate (for rent &gt; ₹{gstLuxuryThreshold})</span>
+                  <span className="text-rose-600 font-black bg-rose-100 border border-rose-200 px-2.5 py-1 rounded-xl">
+                    {gstLuxuryRate}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="28"
+                  value={gstLuxuryRate}
+                  onChange={(e) => {
+                    setGstLuxuryRate(parseInt(e.target.value));
+                    triggerSaveAlert("Premium GST tax config updated successfully.");
+                  }}
+                  className="w-full h-1.5 bg-zinc-100 rounded-lg appearance-none cursor-pointer accent-rose-600"
+                />
+                <p className="text-[9px] text-zinc-400 font-bold">Luxury accommodation GST rate (applies above threshold).</p>
+              </div>
+
+              {/* Luxury GST Threshold */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs font-bold text-zinc-700">
+                  <span>Luxury GST Threshold (₹)</span>
+                  <span className="text-rose-600 font-black bg-rose-100 border border-rose-200 px-2.5 py-1 rounded-xl">
+                    ₹{gstLuxuryThreshold}
+                  </span>
+                </div>
+                <input
+                  type="number"
+                  value={gstLuxuryThreshold}
+                  onChange={(e) => {
+                    setGstLuxuryThreshold(Number(e.target.value) || 0);
+                    triggerSaveAlert("Luxury GST threshold updated.");
+                  }}
+                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-2.5 text-xs font-bold text-zinc-700 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+                <p className="text-[9px] text-zinc-400 font-bold">Daily rent threshold above which Premium GST rate applies.</p>
+              </div>
+
+              {/* TCS rate Slider */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs font-bold text-zinc-700">
+                  <span>TCS Deduction Rate (ECO)</span>
+                  <span className="text-amber-600 font-black bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-xl">
+                    {tcsRate}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="5"
+                  step="0.5"
+                  value={tcsRate}
+                  onChange={(e) => {
+                    setTcsRate(parseFloat(e.target.value));
+                    triggerSaveAlert("TCS rate config updated successfully.");
+                  }}
+                  className="w-full h-1.5 bg-zinc-100 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                />
+                <p className="text-[9px] text-zinc-400 font-bold">Tax Collected at Source (Sec 52 CGST).</p>
+              </div>
+
+              {/* TDS rate Slider */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs font-bold text-zinc-700">
+                  <span>TDS Deduction Rate (Income Tax)</span>
+                  <span className="text-amber-600 font-black bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-xl">
+                    {tdsRate}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="5"
+                  step="0.5"
+                  value={tdsRate}
+                  onChange={(e) => {
+                    setTdsRate(parseFloat(e.target.value));
+                    triggerSaveAlert("TDS rate config updated successfully.");
+                  }}
+                  className="w-full h-1.5 bg-zinc-100 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                />
+                <p className="text-[9px] text-zinc-400 font-bold">Tax Deducted at Source (Sec 194-O).</p>
+              </div>
+
+              {/* Platform GST rate Slider */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs font-bold text-zinc-700">
+                  <span>Platform Fee & Commission GST Rate</span>
+                  <span className="text-emerald-600 font-black bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-xl">
+                    {platformGstRate}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="28"
+                  value={platformGstRate}
+                  onChange={(e) => {
+                    setPlatformGstRate(parseInt(e.target.value));
+                    triggerSaveAlert("Platform GST config updated successfully.");
+                  }}
+                  className="w-full h-1.5 bg-zinc-100 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                />
+                <p className="text-[9px] text-zinc-400 font-bold">Tax applied on the platform fee and vendor commission.</p>
               </div>
 
               {/* Guest Platform Fee rate Slider */}
@@ -337,28 +493,6 @@ export const SettingsModule: React.FC<SettingsModuleProps> = ({
                 <p className="text-[9px] text-zinc-400 font-bold">Minimum accrued host balance required before payout trigger settles.</p>
               </div>
 
-              {/* Automated Payout Toggle Switch */}
-              <div className="border-t border-zinc-50 pt-4 flex items-center justify-between">
-                <div>
-                  <h4 className="text-xs font-black text-zinc-800">Automated Payout Settlement</h4>
-                  <p className="text-[9px] text-zinc-400 font-bold mt-0.5">Auto-transfer host balance via Razorpay Route API on booking check-out completion.</p>
-                </div>
-                <button
-                  onClick={() => {
-                    setAutoPayoutEnabled(!autoPayoutEnabled);
-                    triggerSaveAlert(
-                      !autoPayoutEnabled
-                        ? "Automated payouts enabled. Live API active."
-                        : "Switched to manual audit payout approval."
-                    );
-                  }}
-                  className={`w-12 h-6 rounded-full transition-all relative flex items-center ${autoPayoutEnabled ? "bg-primary" : "bg-zinc-200"
-                    }`}
-                >
-                  <span className={`h-4 w-4 rounded-full bg-white shadow absolute transition-all ${autoPayoutEnabled ? "right-1" : "left-1"
-                    }`} />
-                </button>
-              </div>
             </div>
           </div>
 
@@ -524,96 +658,6 @@ export const SettingsModule: React.FC<SettingsModuleProps> = ({
 
         {/* Right Side: Security, Firewall & Metadata */}
         <div className="space-y-8">
-
-          {/* Card 3: API Security Limits */}
-          <div className="bg-white border border-zinc-100 shadow-sm rounded-[36px] p-8 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-2xl bg-rose-50 text-rose-500 border border-rose-100">
-                <Sliders className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-sm font-black text-zinc-900 tracking-tight">API Security Limits</h3>
-                <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Configure client rate-limiting parameters</p>
-              </div>
-            </div>
-
-            <div className="space-y-4 mt-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Global Limit */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-xs font-bold text-zinc-700">
-                    <span>Global Limit</span>
-                    <span className="text-zinc-950 font-black">{rateLimit} req/m</span>
-                  </div>
-                  <input
-                    type="number"
-                    value={rateLimit}
-                    onChange={(e) => {
-                      setRateLimit(parseInt(e.target.value) || 60);
-                      triggerSaveAlert("API global rate limit revised.");
-                    }}
-                    className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-2.5 text-xs font-bold text-zinc-700 focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-
-                {/* Auth Limit */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-xs font-bold text-zinc-700">
-                    <span>Auth Limit</span>
-                    <span className="text-zinc-950 font-black">{rateLimitAuthMax} req/m</span>
-                  </div>
-                  <input
-                    type="number"
-                    value={rateLimitAuthMax}
-                    onChange={(e) => {
-                      setRateLimitAuthMax(parseInt(e.target.value) || 10);
-                      triggerSaveAlert("Auth endpoints rate limit revised.");
-                    }}
-                    className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-2.5 text-xs font-bold text-zinc-700 focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-              </div>
-
-              {/* Booking Expiry */}
-              <div className="space-y-2 border-t border-zinc-50 pt-4">
-                <div className="flex justify-between items-center text-xs font-bold text-zinc-700">
-                  <span>Instant Booking Expiry (Minutes)</span>
-                  <span className="text-zinc-950 font-black">{bookingExpiryMinutes} mins</span>
-                </div>
-                <input
-                  type="number"
-                  value={bookingExpiryMinutes}
-                  onChange={(e) => {
-                    setBookingExpiryMinutes(parseInt(e.target.value) || 15);
-                    triggerSaveAlert("Instant booking expiry timer updated.");
-                  }}
-                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-2.5 text-xs font-bold text-zinc-700 focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-                <p className="text-[9px] text-zinc-400 font-bold">Unpaid instant bookings are auto-released after this period.</p>
-              </div>
-
-              {/* MFA Toggle */}
-              <div className="flex items-center justify-between border-t border-zinc-50 pt-4">
-                <div>
-                  <h4 className="text-xs font-black text-zinc-800">Enforce Multi-Factor Auth (MFA)</h4>
-                  <p className="text-[9px] text-zinc-400 font-bold mt-0.5">Mandate OTP verification via SMS/Email for all Admin & Vendor logins.</p>
-                </div>
-                <button
-                  onClick={() => {
-                    setMfaEnforced(!mfaEnforced);
-                    triggerSaveAlert(
-                      !mfaEnforced ? "MFA enforcement activated." : "MFA settings set to optional."
-                    );
-                  }}
-                  className={`w-12 h-6 rounded-full transition-all relative flex items-center ${mfaEnforced ? "bg-rose-500" : "bg-zinc-200"
-                    }`}
-                >
-                  <span className={`h-4 w-4 rounded-full bg-white shadow absolute transition-all ${mfaEnforced ? "right-1" : "left-1"
-                    }`} />
-                </button>
-              </div>
-            </div>
-          </div>
 
           {/* Card 4: IP Address Blocklist */}
           <div className="bg-white border border-zinc-100 shadow-sm rounded-[36px] p-8 space-y-6">

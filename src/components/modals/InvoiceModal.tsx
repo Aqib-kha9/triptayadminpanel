@@ -17,14 +17,15 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
 }) => {
   if (!booking) return null;
 
-  // Calculate pricing breakdown based on SOW math
-  // Total Amount (A) = Base Price (X) + GST (Y) + Platform Fee (Z)
-  // X = A / (1 + (gstRate/100) + (commissionRate/100))
   const totalAmount = booking.amount;
   const rateSum = (gstRate + commissionRate) / 100;
-  const basePrice = Math.round(totalAmount / (1 + rateSum));
-  const gstAmount = Math.round(basePrice * (gstRate / 100));
-  const platformFee = totalAmount - basePrice - gstAmount; // ensures precise rounding match
+  
+  // Use DB values if present, else fallback to reverse math for older legacy bookings
+  const basePrice = booking.baseAmount ?? Math.round(totalAmount / (1 + rateSum));
+  const platformFee = booking.platformFee ?? (totalAmount - basePrice - Math.round(basePrice * (gstRate / 100)));
+  const accommodationTax = booking.accommodationTax ?? Math.round(basePrice * (gstRate / 100));
+  const platformFeeTax = booking.platformFeeTax ?? 0;
+  const totalGstAmount = booking.taxAmount ?? (accommodationTax + platformFeeTax);
 
   const handlePrint = () => {
     // Standard print action simulator
@@ -145,12 +146,21 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({
               <span className="text-right text-zinc-900">₹{platformFee.toLocaleString()}</span>
             </div>
 
-            {/* GST fee */}
+            {/* Accommodation GST fee */}
             <div className="grid grid-cols-3 text-xs font-bold text-zinc-700 py-1">
-              <span>GST (Goods & Services Tax)</span>
-              <span className="text-zinc-400 text-center">{gstRate}% split</span>
-              <span className="text-right text-zinc-900">₹{gstAmount.toLocaleString()}</span>
+              <span>GST (Accommodation / Activity)</span>
+              <span className="text-zinc-400 text-center">-</span>
+              <span className="text-right text-zinc-900">₹{accommodationTax.toLocaleString()}</span>
             </div>
+
+            {/* Platform GST fee */}
+            {(platformFeeTax > 0 || booking.platformFeeTax !== undefined) && (
+              <div className="grid grid-cols-3 text-xs font-bold text-zinc-700 py-1">
+                <span>GST (Platform Fee @ 18%)</span>
+                <span className="text-zinc-400 text-center">18% split</span>
+                <span className="text-right text-zinc-900">₹{platformFeeTax.toLocaleString()}</span>
+              </div>
+            )}
 
             <div className="border-t border-zinc-900 pt-3 flex justify-between items-center">
               <span className="text-xs font-black text-zinc-900">Grand Total (Inclusive)</span>

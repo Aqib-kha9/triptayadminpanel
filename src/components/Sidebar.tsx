@@ -21,7 +21,7 @@ import { useAuth } from "../context/AuthContext";
 
 interface SidebarProps {
   pendingApprovalsCount: number;
-  pendingDisputesCount?: number;
+  pendingTicketsCount?: number;
   unreadChatsCount?: number;
   mobileOpen: boolean;
   onClose: () => void;
@@ -35,9 +35,8 @@ const NAV_ITEMS = [
   { id: "activities", label: "Activities Management", icon: <Compass className="w-4 h-4" />, path: "/activities" },
   { id: "testimonials", label: "Testimonials", icon: <MessageSquare className="w-4 h-4" />, path: "/testimonials" },
   { id: "financials", label: "GST & Ledger split", icon: <Coins className="w-4 h-4" />, path: "/financials" },
-  { id: "disputes", label: "Dispute Tickets", icon: <AlertTriangle className="w-4 h-4" />, path: "/disputes", badgeKey: "disputes" as const },
+  { id: "help-center", label: "Help Center", icon: <AlertTriangle className="w-4 h-4" />, path: "/help-center", badgeKey: "tickets" as const },
   { id: "chats", label: "Support Chat Inbox", icon: <MessageSquare className="w-4 h-4" />, path: "/chats", badgeKey: "chats" as const },
-  { id: "support", label: "Support Tickets", icon: <MessageSquare className="w-4 h-4" />, path: "/support" },
   { id: "offers", label: "Special Offers", icon: <Tag className="w-4 h-4" />, path: "/offers" },
   { id: "coupons", label: "Coupons Management", icon: <Tag className="w-4 h-4" />, path: "/coupons" },
   { id: "campaigns", label: "Marketing Campaigns", icon: <Send className="w-4 h-4" />, path: "/campaigns" },
@@ -48,7 +47,7 @@ const NAV_ITEMS = [
 
 export const Sidebar: React.FC<SidebarProps> = ({
   pendingApprovalsCount,
-  pendingDisputesCount = 0,
+  pendingTicketsCount = 0,
   unreadChatsCount = 0,
   mobileOpen,
   onClose,
@@ -79,7 +78,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const getBadge = (badgeKey: string | undefined) => {
     if (badgeKey === "approvals") return pendingApprovalsCount > 0 ? pendingApprovalsCount : undefined;
-    if (badgeKey === "disputes") return pendingDisputesCount > 0 ? pendingDisputesCount : undefined;
+    if (badgeKey === "tickets") return pendingTicketsCount > 0 ? pendingTicketsCount : undefined;
     if (badgeKey === "chats") return unreadChatsCount > 0 ? unreadChatsCount : undefined;
     return undefined;
   };

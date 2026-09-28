@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import type { Testimonial } from "../../types";
-import { Plus, Pencil, Trash2, Image as ImageIcon, Eye, EyeOff, Star, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Image as ImageIcon, Eye, EyeOff, Star, Loader2, Upload } from "lucide-react";
 
 interface TestimonialsModuleProps {
   apiFetch: <T = any>(path: string, options?: RequestInit) => Promise<T>;
@@ -41,6 +41,7 @@ export const TestimonialsModule: React.FC<TestimonialsModuleProps> = () => {
   const [formImage, setFormImage] = useState("");
   const [formOrder, setFormOrder] = useState(0);
   const [formActive, setFormActive] = useState(true);
+  const [imageUploading, setImageUploading] = useState(false);
 
   const fetchTestimonials = useCallback(async () => {
     setLoading(true);
@@ -233,15 +234,45 @@ export const TestimonialsModule: React.FC<TestimonialsModuleProps> = () => {
             <div className="space-y-1">
               <label className="text-[10px] font-black text-zinc-500 uppercase tracking-wider flex items-center gap-1">
                 <ImageIcon className="w-3 h-3" />
-                Image URL
+                Image (Upload or URL)
               </label>
-              <input
-                type="url"
-                value={formImage}
-                onChange={(e) => setFormImage(e.target.value)}
-                placeholder="https://images.unsplash.com/..."
-                className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold text-zinc-700 placeholder:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-              />
+              <div className="flex gap-2">
+                <label className="flex-shrink-0 cursor-pointer flex items-center gap-2 px-4 py-3 bg-zinc-900 text-white rounded-2xl text-xs font-bold hover:bg-zinc-800 transition-colors">
+                  <Upload className="w-4 h-4" />
+                  {imageUploading ? "..." : "Upload"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    disabled={imageUploading}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      setImageUploading(true);
+                      try {
+                        const formData = new FormData();
+                        formData.append("file", file);
+                        const res = await apiFetch<{ status: string; data: { url: string } }>(
+                          "/upload-image",
+                          { method: "POST", body: formData }
+                        );
+                        setFormImage(res.data.url);
+                      } catch (err: any) {
+                        alert(err.message || "Upload failed.");
+                      } finally {
+                        setImageUploading(false);
+                      }
+                    }}
+                  />
+                </label>
+                <input
+                  type="url"
+                  value={formImage}
+                  onChange={(e) => setFormImage(e.target.value)}
+                  placeholder="https://..."
+                  className="w-full border border-zinc-100 bg-zinc-50 rounded-2xl px-4 py-3 text-xs font-bold text-zinc-700 placeholder:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                />
+              </div>
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black text-zinc-500 uppercase tracking-wider">

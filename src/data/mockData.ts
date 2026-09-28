@@ -239,42 +239,4 @@ export const INITIAL_DISPUTES: DisputeTicket[] = [
   }
 ];
 
-export const INITIAL_CHATROOMS: ChatRoom[] = [
-  {
-    id: "CHT-001",
-    guestName: "Meera Kapoor",
-    hostName: "Aryan Singh",
-    propertyName: "The Creek Villa: A Riverside Sanctuary",
-    lastMessage: "Is early check-in possible tomorrow around 9 AM?",
-    unreadCount: 2,
-    messages: [
-      { id: "m1", sender: "Guest", text: "Hello Aryan, looking forward to our stay at the Creek Villa.", timestamp: "Yesterday, 02:00 PM" },
-      { id: "m2", sender: "Host", text: "Welcome Meera! We are preparing the villa for you.", timestamp: "Yesterday, 02:30 PM" },
-      { id: "m3", sender: "Guest", text: "Is early check-in possible tomorrow around 9 AM?", timestamp: "Today, 08:00 AM" }
-    ]
-  },
-  {
-    id: "CHT-002",
-    guestName: "Anuj Sharma",
-    hostName: "Rakesh Negi",
-    propertyName: "Ganga River Rafting Adventure",
-    lastMessage: "Yes, meeting point is at the tapovan bridge at 8 AM.",
-    unreadCount: 0,
-    messages: [
-      { id: "m4", sender: "Guest", text: "Hi Rakesh, where is the exact starting point for rafting?", timestamp: "Yesterday, 06:15 PM" },
-      { id: "m5", sender: "Host", text: "Yes, meeting point is at the tapovan bridge at 8 AM.", timestamp: "Yesterday, 06:30 PM" }
-    ]
-  },
-  {
-    id: "CHT-003",
-    guestName: "Kabir Roy",
-    hostName: "Sneha Reddy",
-    propertyName: "Mountain View Cottage",
-    lastMessage: "No problem. Let us know if you need pick up.",
-    unreadCount: 0,
-    messages: [
-      { id: "m6", sender: "Guest", text: "Hey Sneha, our train is delayed. We will arrive late by 2 hours.", timestamp: "15 May, 2026, 05:00 PM" },
-      { id: "m7", sender: "Host", text: "No problem. Let us know if you need pick up.", timestamp: "15 May, 2026, 05:15 PM" }
-    ]
-  }
-];
+

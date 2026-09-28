@@ -24,7 +24,7 @@ import ActivitiesPage from "./pages/ActivitiesPage";
 import ActivityDetailPage from "./pages/ActivityDetailPage";
 import TestimonialsPage from "./pages/TestimonialsPage";
 import FinancialsPage from "./pages/FinancialsPage";
-import DisputesPage from "./pages/DisputesPage";
+import HelpCenterPage from "./pages/HelpCenterPage";
 import ChatsPage from "./pages/ChatsPage";
 import CouponsPage from "./pages/CouponsPage";
 import CampaignsPage from "./pages/CampaignsPage";
@@ -32,7 +32,6 @@ import AttractionsPage from "./pages/AttractionsPage";
 import SettingsPage from "./pages/SettingsPage";
 import AuditsPage from "./pages/AuditsPage";
 import OffersPage from "./pages/OffersPage";
-import SupportPage from "./pages/SupportPage";
 
 // Modals
 import { KycAppModal } from "./components/modals/KycAppModal";
@@ -47,7 +46,7 @@ import { EditUserModal } from "./components/modals/EditUserModal";
 function AdminLayout() {
   const {
     pendingApprovalsCount,
-    pendingDisputesCount,
+    pendingTicketsCount,
     unreadChatsCount,
     setAudits,
     selectedKycApp, setSelectedKycApp, handleApprove, handleReject,
@@ -68,7 +67,7 @@ function AdminLayout() {
       {/* ================= SIDEBAR NAVIGATION ================= */}
       <Sidebar
         pendingApprovalsCount={pendingApprovalsCount}
-        pendingDisputesCount={pendingDisputesCount}
+        pendingTicketsCount={pendingTicketsCount}
         unreadChatsCount={unreadChatsCount}
         mobileOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
@@ -95,9 +94,8 @@ function AdminLayout() {
             <Route path="/activities" element={<ActivitiesPage />} />
             <Route path="/testimonials" element={<TestimonialsPage />} />
             <Route path="/financials" element={<FinancialsPage />} />
-            <Route path="/disputes" element={<DisputesPage />} />
+            <Route path="/help-center" element={<HelpCenterPage />} />
             <Route path="/chats" element={<ChatsPage />} />
-            <Route path="/support" element={<SupportPage />} />
             <Route path="/coupons" element={<CouponsPage />} />
             <Route path="/offers" element={<OffersPage />} />
             <Route path="/campaigns" element={<CampaignsPage />} />

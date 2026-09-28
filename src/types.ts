@@ -54,8 +54,18 @@ export interface SystemBooking {
   propertyName: string;
   hostName: string;
   amount: number;
+  baseAmount?: number;
+  platformFee?: number;
+  taxAmount?: number;
+  accommodationTax?: number;
+  platformFeeTax?: number;
+  commissionTax?: number;
+  tcsDeduction?: number;
+  tdsDeduction?: number;
+  refundAmount?: number;
   date: string;
   status: "Completed" | "Upcoming" | "Cancelled";
+  paymentMethod?: string;
 }
 
 export interface Coupon {
@@ -117,22 +127,45 @@ export interface TouristAttraction {
 
 export interface AuditLog {
   id: string;
-  timestamp: string;
-  type: "Webhook" | "SQS Queue" | "Security" | "System";
-  event: string;
-  status: "Success" | "Failed" | "Blocked";
+  actorEmail?: string;
+  actorRole?: string;
+  action?: string;
+  category?: string;
+  resource?: string;
+  resourceId?: string;
+  method?: string;
+  path?: string;
+  ip?: string;
+  statusCode?: number;
   details?: any;
+  createdAt?: string;
+  timestamp?: string;
+  type?: string;
+  event?: string;
+  status?: string;
 }
 
-export interface DisputeTicket {
+export interface Ticket {
   id: string;
-  bookingId: string;
-  guestName: string;
-  hostName: string;
-  issue: string;
-  amount: number;
-  status: "Pending" | "Resolved-Refunded" | "Resolved-PaidVendor";
+  ticketRef: string;
+  type: string;
+  priority: string;
+  status: string;
+  userId?: string;
+  userRole?: string;
+  name: string;
+  email: string;
+  subject: string;
+  description: string;
+  evidence?: any;
+  bookingId?: string;
+  againstUserId?: string;
+  resolution?: string;
+  refundAmount?: number;
+  resolvedBy?: string;
+  resolvedAt?: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface ChatMessage {
@@ -144,8 +177,12 @@ export interface ChatMessage {
 
 export interface ChatRoom {
   id: string;
+  guestId?: string;
   guestName: string;
+  hostId?: string;
   hostName: string;
+  listingId?: string;
+  activityId?: string;
   propertyName: string;
   lastMessage: string;
   unreadCount: number;
@@ -172,4 +209,15 @@ export interface Activity {
   price: number;
   rating: string;
   status: "Active" | "Suspended";
+}
+
+export interface DisputeTicket {
+  id: string;
+  bookingId: string;
+  guestName: string;
+  hostName: string;
+  issue: string;
+  amount: number;
+  status: string;
+  createdAt: string;
 }

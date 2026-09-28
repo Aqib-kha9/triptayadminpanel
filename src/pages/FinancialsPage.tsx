@@ -5,6 +5,7 @@ export default function FinancialsPage() {
     const {
         bookings, commissionRate, setCommissionRate, gstRate, setGstRate,
         triggerPayoutModal, handleCancelAndRefundBooking, setSelectedInvoiceBooking,
+        settlePapDebt,
         commissionSummary, hostBreakdown, payouts, financialsLoading
     } = useAdmin();
     return (
@@ -17,6 +18,7 @@ export default function FinancialsPage() {
             triggerPayoutModal={triggerPayoutModal}
             handleCancelAndRefundBooking={handleCancelAndRefundBooking}
             setSelectedInvoiceBooking={setSelectedInvoiceBooking}
+            settlePapDebt={settlePapDebt}
             commissionSummary={commissionSummary}
             hostBreakdown={hostBreakdown}
             payouts={payouts}

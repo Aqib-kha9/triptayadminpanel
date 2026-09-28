@@ -3,7 +3,10 @@ import { SettingsModule } from "../components/modules/SettingsModule";
 
 export default function SettingsPage() {
     const {
+        isPayAtPropertyEnabled, setIsPayAtPropertyEnabled,
         commissionRate, setCommissionRate, gstRate, setGstRate,
+        gstLuxuryRate, setGstLuxuryRate, gstLuxuryThreshold, setGstLuxuryThreshold,
+        tcsRate, setTcsRate, tdsRate, setTdsRate, platformGstRate, setPlatformGstRate,
         platformFeeRate, setPlatformFeeRate, payoutMinThreshold, setPayoutMinThreshold,
         autoPayoutEnabled, setAutoPayoutEnabled, rateLimit, setRateLimit,
         rateLimitAuthMax, setRateLimitAuthMax, bookingExpiryMinutes, setBookingExpiryMinutes,
@@ -22,10 +25,22 @@ export default function SettingsPage() {
     } = useAdmin();
     return (
         <SettingsModule
+            isPayAtPropertyEnabled={isPayAtPropertyEnabled}
+            setIsPayAtPropertyEnabled={setIsPayAtPropertyEnabled}
             commissionRate={commissionRate}
             setCommissionRate={setCommissionRate}
             gstRate={gstRate}
             setGstRate={setGstRate}
+            gstLuxuryRate={gstLuxuryRate}
+            setGstLuxuryRate={setGstLuxuryRate}
+            gstLuxuryThreshold={gstLuxuryThreshold}
+            setGstLuxuryThreshold={setGstLuxuryThreshold}
+            tcsRate={tcsRate}
+            setTcsRate={setTcsRate}
+            tdsRate={tdsRate}
+            setTdsRate={setTdsRate}
+            platformGstRate={platformGstRate}
+            setPlatformGstRate={setPlatformGstRate}
             platformFeeRate={platformFeeRate}
             setPlatformFeeRate={setPlatformFeeRate}
             payoutMinThreshold={payoutMinThreshold}

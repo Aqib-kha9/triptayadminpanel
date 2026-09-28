@@ -9,7 +9,7 @@ import type {
     Campaign,
     CampaignTemplate,
     AuditLog,
-    DisputeTicket,
+    Ticket,
     ChatRoom,
     ChatMessage,
     Activity
@@ -116,7 +116,7 @@ interface AdminContextType {
     templates: CampaignTemplate[];
     audits: AuditLog[];
     setAudits: React.Dispatch<React.SetStateAction<AuditLog[]>>;
-    disputes: DisputeTicket[];
+    tickets: Ticket[];
     chatRooms: ChatRoom[];
 
     // KYC-specific states
@@ -142,10 +142,12 @@ interface AdminContextType {
     refreshBookings: () => Promise<void>;
     couponsLoading: boolean;
     refreshCoupons: () => Promise<void>;
+    chatsLoading: boolean;
+    refreshChats: () => Promise<void>;
     auditsLoading: boolean;
     refreshAudits: () => Promise<void>;
-    disputesLoading: boolean;
-    refreshDisputes: () => Promise<void>;
+    ticketsLoading: boolean;
+    refreshTickets: () => Promise<void>;
     campaignsLoading: boolean;
     refreshCampaigns: () => Promise<void>;
     templatesLoading: boolean;
@@ -166,6 +168,7 @@ interface AdminContextType {
         commission: number;
         payout: number;
         pending: number;
+        papDebtPending: number;
     }>;
     payouts: Array<{
         id: string;
@@ -183,8 +186,20 @@ interface AdminContextType {
     // Financial settings
     commissionRate: number;
     setCommissionRate: (v: number) => void;
+    isPayAtPropertyEnabled: boolean;
+    setIsPayAtPropertyEnabled: (v: boolean) => void;
     gstRate: number;
     setGstRate: (v: number) => void;
+    gstLuxuryRate: number;
+    setGstLuxuryRate: (v: number) => void;
+    gstLuxuryThreshold: number;
+    setGstLuxuryThreshold: (v: number) => void;
+    tcsRate: number;
+    setTcsRate: (v: number) => void;
+    tdsRate: number;
+    setTdsRate: (v: number) => void;
+    platformGstRate: number;
+    setPlatformGstRate: (v: number) => void;
     platformFeeRate: number;
     setPlatformFeeRate: (v: number) => void;
     payoutMinThreshold: number;
@@ -326,6 +341,7 @@ interface AdminContextType {
     triggerPayoutModal: (vendorName: string, balance: number) => void;
     executeManualPayout: () => void;
     closePayoutReceipt: () => void;
+    settlePapDebt: (bookingId: string) => Promise<void>;
     toggleUserStatus: (userId: string) => void;
     toggleListingStatus: (listingId: string) => void;
     handleAwardCoins: (e: React.FormEvent) => void;
@@ -333,15 +349,14 @@ interface AdminContextType {
     handleRefundDispute: (disputeId: string) => void;
     handleReleaseDispute: (disputeId: string) => void;
     handleBlockHost: (hostName: string) => void;
-    handleSendMessage: (roomId: string, text: string, sender: "Guest" | "Host" | "Admin") => void;
-    handleSimulateIncoming: (roomId: string, text: string, sender: "Guest" | "Host") => void;
+    handleSendMessage: (roomId: string, text: string) => void;
     handleSimulateLog: (type: "Webhook" | "SQS Queue" | "Security" | "System", event: string, status: "Success" | "Failed" | "Blocked") => void;
     handleSaveListing: (updatedProperty: Property) => void;
     handleSaveUser: (updatedUser: PlatformUser) => void;
 
     // Computed
     pendingApprovalsCount: number;
-    pendingDisputesCount: number;
+    pendingTicketsCount: number;
     unreadChatsCount: number;
 }
 
@@ -380,7 +395,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [templates, setTemplates] = useState<CampaignTemplate[]>([]);
     const [audits, setAudits] = useState<AuditLog[]>([]);
-    const [disputes, setDisputes] = useState<DisputeTicket[]>([]);
+    const [tickets, setTickets] = useState<Ticket[]>([]);
     const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
 
     // Dashboard stats
@@ -394,7 +409,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     const [bookingsLoading, setBookingsLoading] = useState(false);
     const [couponsLoading, setCouponsLoading] = useState(false);
     const [auditsLoading, setAuditsLoading] = useState(false);
-    const [disputesLoading, setDisputesLoading] = useState(false);
+    const [ticketsLoading, setTicketsLoading] = useState(false);
     const [campaignsLoading, setCampaignsLoading] = useState(false);
     const [templatesLoading, setTemplatesLoading] = useState(false);
 
@@ -413,6 +428,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         commission: number;
         payout: number;
         pending: number;
+        papDebtPending: number;
     }>>([]);
     const [payouts, setPayouts] = useState<Array<{
         id: string;
@@ -433,7 +449,13 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
     // Financial / Platform Configuration
     const [commissionRate, setCommissionRateRaw] = useState(15);
-    const [gstRate, setGstRateRaw] = useState(5);
+    const [isPayAtPropertyEnabled, setIsPayAtPropertyEnabledRaw] = useState(false);
+    const [gstRate, setGstRateRaw] = useState(12); // Base fallback
+    const [gstLuxuryRate, setGstLuxuryRateRaw] = useState(18);
+    const [gstLuxuryThreshold, setGstLuxuryThresholdRaw] = useState(7500);
+    const [tcsRate, setTcsRateRaw] = useState(1);
+    const [tdsRate, setTdsRateRaw] = useState(1);
+    const [platformGstRate, setPlatformGstRateRaw] = useState(18);
     const [platformFeeRate, setPlatformFeeRateRaw] = useState(5);
     const [payoutMinThreshold, setPayoutMinThresholdRaw] = useState(500);
     const [autoPayoutEnabled, setAutoPayoutEnabledRaw] = useState(false);
@@ -497,9 +519,33 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         setCommissionRateRaw(rate);
         saveConfiguration("commission_rate", rate);
     }, [saveConfiguration]);
+    const setIsPayAtPropertyEnabled = useCallback((enabled: boolean) => {
+        setIsPayAtPropertyEnabledRaw(enabled);
+        saveConfiguration("pay_at_property_enabled", enabled, true);
+    }, [saveConfiguration]);
     const setGstRate = useCallback((rate: number) => {
         setGstRateRaw(rate);
         saveConfiguration("gst_rate", rate);
+    }, [saveConfiguration]);
+    const setGstLuxuryRate = useCallback((rate: number) => {
+        setGstLuxuryRateRaw(rate);
+        saveConfiguration("gst_luxury_rate", rate);
+    }, [saveConfiguration]);
+    const setGstLuxuryThreshold = useCallback((val: number) => {
+        setGstLuxuryThresholdRaw(val);
+        saveConfiguration("gst_luxury_threshold", val);
+    }, [saveConfiguration]);
+    const setTcsRate = useCallback((rate: number) => {
+        setTcsRateRaw(rate);
+        saveConfiguration("tcs_rate", rate);
+    }, [saveConfiguration]);
+    const setTdsRate = useCallback((rate: number) => {
+        setTdsRateRaw(rate);
+        saveConfiguration("tds_rate", rate);
+    }, [saveConfiguration]);
+    const setPlatformGstRate = useCallback((rate: number) => {
+        setPlatformGstRateRaw(rate);
+        saveConfiguration("platform_gst_rate", rate);
     }, [saveConfiguration]);
     const setPlatformFeeRate = useCallback((rate: number) => {
         setPlatformFeeRateRaw(rate);
@@ -712,6 +758,55 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
+    const [chatsLoading, setChatsLoading] = useState(false);
+
+    // ────────── Chats: Fetch from backend ──────────
+    const refreshChats = useCallback(async () => {
+        setChatsLoading(true);
+        try {
+            const res = await apiFetch<{ status: string; data: { conversations: any[] } }>("/chats");
+            if (res.status === "success" && res.data?.conversations) {
+                const mapped: ChatRoom[] = await Promise.all(res.data.conversations.map(async (c: any) => {
+                    // Find guest and host
+                    const adminId = "ADMIN-000";
+                    const guest = c.allParticipants?.find((p:any) => p.role?.toLowerCase() === "guest") || c.allParticipants?.find((p:any) => p.name !== "Admin") || {};
+                    const host = c.allParticipants?.find((p:any) => p.role?.toLowerCase() === "host") || c.allParticipants?.find((p:any) => p._id !== guest._id && p.name !== "Admin") || c.allParticipants?.[1] || {};
+
+                    // Fetch messages for this room
+                    const msgRes = await apiFetch<{ status: string; data: { messages: any[] } }>(`/chats/${c._id}/messages?limit=50`);
+                    let messages: ChatMessage[] = [];
+                    if (msgRes.status === "success" && msgRes.data?.messages) {
+                        messages = msgRes.data.messages.map((m: any) => ({
+                            id: m._id,
+                            sender: !m.sender ? "Admin" : (m.sender?._id === adminId ? "Admin" : (m.sender?._id === host._id ? "Host" : "Guest")),
+                            text: m.text,
+                            timestamp: new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        }));
+                    }
+
+                    return {
+                        id: c._id,
+                        guestId: guest._id,
+                        guestName: guest.name || "Unknown Guest",
+                        hostId: host._id,
+                        hostName: host.name || "Unknown Host",
+                        listingId: c.listingId,
+                        activityId: c.activityId,
+                        propertyName: c.bookingContext?.title || "Direct Message",
+                        lastMessage: c.lastMessage?.text || "",
+                        unreadCount: c.unreadCount || 0,
+                        messages,
+                    };
+                }));
+                setChatRooms(mapped);
+            }
+        } catch (err: any) {
+            console.error("Chats fetch failed:", err.message);
+        } finally {
+            setChatsLoading(false);
+        }
+    }, []);
+
     // ────────── Properties (Listings): Fetch from backend ──────────
     const refreshProperties = useCallback(async () => {
         setPropertiesLoading(true);
@@ -781,6 +876,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
                         amount: b.totalAmount || b.amount || 0,
                         date: b.checkIn ? new Date(b.checkIn).toLocaleDateString() : (b.createdAt ? new Date(b.createdAt).toLocaleDateString() : "—"),
                         status: isFailedOrUnpaidPending ? "Cancelled" : (b.status === "completed" ? "Completed" : "Upcoming"),
+                        paymentMethod: b.paymentMethod,
+                        papSettlementStatus: b.papSettlementStatus,
                     };
                 });
                 setBookings(mapped);
@@ -831,14 +928,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         try {
             const res = await apiFetch<{ status: string; data: { logs: any[] } }>("/audits?limit=100");
             if (res.status === "success" && res.data?.logs) {
-                const mapped: AuditLog[] = res.data.logs.map((l: any) => ({
-                    id: l.id || l._id,
-                    timestamp: l.createdAt ? new Date(l.createdAt).toLocaleString() : "—",
-                    type: l.category === "security" ? "Security" : l.category === "webhook" ? "Webhook" : l.category === "sqs" ? "SQS Queue" : "System",
-                    event: `${l.action || "action"} — ${l.resource || "resource"} (${l.method || ""} ${l.path || ""})`,
-                    status: l.statusCode && l.statusCode < 400 ? "Success" : l.statusCode && l.statusCode < 500 ? "Failed" : "Blocked",
-                }));
-                setAudits(mapped);
+                setAudits(res.data.logs as AuditLog[]);
             }
         } catch (err: any) {
             console.error("Audit logs fetch failed:", err.message);
@@ -847,28 +937,40 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         }
     }, []);
 
-    // ────────── Disputes: Fetch from backend ──────────
-    const refreshDisputes = useCallback(async () => {
-        setDisputesLoading(true);
+    // ────────── Tickets: Fetch from unified API ──────────
+    const refreshTickets = useCallback(async () => {
+        setTicketsLoading(true);
         try {
-            const res = await apiFetch<{ status: string; data: { disputes: any[] } }>("/disputes?limit=50");
-            if (res.status === "success" && res.data?.disputes) {
-                const mapped: DisputeTicket[] = res.data.disputes.map((d: any) => ({
-                    id: d.id || d._id,
-                    bookingId: d.bookingRef || d.bookingId || "N/A",
-                    guestName: d.raisedByRole === "guest" ? d.raisedByName : d.againstUserName,
-                    hostName: d.raisedByRole === "host" ? d.raisedByName : d.againstUserName,
-                    issue: d.subject || d.type || "Dispute",
-                    amount: d.amount || d.refundAmount || 0,
-                    status: d.status === "open" || d.status === "under_review" ? "Pending" : d.status === "resolved_refunded" ? "Resolved-Refunded" : d.status === "resolved_paid_vendor" ? "Resolved-PaidVendor" : d.status === "resolved" ? "Resolved-Refunded" : "Pending",
-                    createdAt: d.createdAt ? new Date(d.createdAt).toLocaleDateString() : "—",
+            const res = await apiFetch<{ status: string; data: { tickets: any[] } }>("/tickets?limit=50");
+            if (res.status === "success" && res.data?.tickets) {
+                const mapped: Ticket[] = res.data.tickets.map((t: any) => ({
+                    id: t.id,
+                    ticketRef: t.ticketRef,
+                    type: t.type,
+                    priority: t.priority,
+                    status: t.status,
+                    userId: t.userId,
+                    userRole: t.userRole,
+                    name: t.name,
+                    email: t.email,
+                    subject: t.subject,
+                    description: t.description,
+                    evidence: t.evidence,
+                    bookingId: t.bookingId,
+                    againstUserId: t.againstUserId,
+                    resolution: t.resolution,
+                    refundAmount: t.refundAmount || 0,
+                    resolvedBy: t.resolvedBy,
+                    resolvedAt: t.resolvedAt,
+                    createdAt: t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "—",
+                    updatedAt: t.updatedAt
                 }));
-                setDisputes(mapped);
+                setTickets(mapped);
             }
         } catch (err: any) {
-            console.error("Disputes fetch failed:", err.message);
+            console.error("Tickets fetch failed:", err.message);
         } finally {
-            setDisputesLoading(false);
+            setTicketsLoading(false);
         }
     }, []);
 
@@ -939,6 +1041,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
                     commission: h.commission || 0,
                     payout: h.payout || 0,
                     pending: h.pending || 0,
+                    papDebtPending: h.papDebtPending || 0,
                 })));
             }
             if (payoutsRes.status === "success" && payoutsRes.data?.payouts) {
@@ -968,8 +1071,14 @@ export function AdminProvider({ children }: { children: ReactNode }) {
             if (res.status === "success" && res.data?.configurations) {
                 const map: Record<string, any> = {};
                 res.data.configurations.forEach((c: any) => { map[c.key] = c.value; });
+                if (map.pay_at_property_enabled !== undefined) setIsPayAtPropertyEnabledRaw(map.pay_at_property_enabled === "true" || map.pay_at_property_enabled === true);
                 if (map.commission_rate !== undefined) setCommissionRateRaw(Number(map.commission_rate));
                 if (map.gst_rate !== undefined) setGstRateRaw(Number(map.gst_rate));
+                if (map.gst_luxury_rate !== undefined) setGstLuxuryRateRaw(Number(map.gst_luxury_rate));
+                if (map.gst_luxury_threshold !== undefined) setGstLuxuryThresholdRaw(Number(map.gst_luxury_threshold));
+                if (map.tcs_rate !== undefined) setTcsRateRaw(Number(map.tcs_rate));
+                if (map.tds_rate !== undefined) setTdsRateRaw(Number(map.tds_rate));
+                if (map.platform_gst_rate !== undefined) setPlatformGstRateRaw(Number(map.platform_gst_rate));
                 if (map.platform_fee_rate !== undefined) setPlatformFeeRateRaw(Number(map.platform_fee_rate));
                 if (map.payout_min_threshold !== undefined) setPayoutMinThresholdRaw(Number(map.payout_min_threshold));
                 if (map.auto_payout_enabled !== undefined) setAutoPayoutEnabledRaw(Boolean(map.auto_payout_enabled));
@@ -1121,6 +1230,41 @@ export function AdminProvider({ children }: { children: ReactNode }) {
             setAudits(prev => [mappedLog, ...prev]);
         });
 
+        socket.on("message:new", (data: any) => {
+            console.log("Real-time message received:", data);
+            const m = data.message;
+            if (!m) return;
+            const adminId = "ADMIN-000";
+            
+            setChatRooms(prev => prev.map(room => {
+                if (room.id === m.conversation) {
+                    const senderRole = m.sender?.role;
+                    let senderType = "Guest";
+                    if (!m.sender) {
+                        senderType = "Admin";
+                    } else if (m.sender?._id === adminId) {
+                        senderType = "Admin";
+                    } else if (senderRole === "Host" || senderRole === "host" || m.sender?._id === room.hostId) {
+                        senderType = "Host";
+                    }
+
+                    const newMessage: ChatMessage = {
+                        id: m._id,
+                        sender: senderType as "Guest" | "Host" | "Admin",
+                        text: m.text,
+                        timestamp: new Date(m.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    };
+                    return {
+                        ...room,
+                        lastMessage: m.text,
+                        unreadCount: m.sender?._id !== adminId ? room.unreadCount + 1 : room.unreadCount,
+                        messages: [...room.messages, newMessage]
+                    };
+                }
+                return room;
+            }));
+        });
+
         return () => {
             socket.disconnect();
         };
@@ -1137,11 +1281,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         refreshCoupons();
         refreshAudits();
         refreshFinancials();
-        refreshDisputes();
+        refreshTickets();
         refreshCampaigns();
         refreshTemplates();
         refreshConfigurations();
         refreshGatewaySettings();
+        refreshChats();
     }, []);
 
     // ────────── Handlers ──────────
@@ -1484,6 +1629,22 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         setPayoutReceipt(null);
     };
 
+    const settlePapDebt = async (bookingId: string) => {
+        try {
+            await apiFetch(`/bookings/${bookingId}/pap-settle`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ method: "manual" }),
+            });
+            setAudits(logs => [{ id: `AUD-${Math.floor(Math.random() * 900) + 100}`, timestamp: new Date().toLocaleTimeString(), type: "System", event: `Settled PAP debt for booking ${bookingId.substring(0,8)}.`, status: "Success" }, ...logs]);
+            await refreshBookings();
+            await refreshFinancials();
+        } catch (err: any) {
+            setAudits(logs => [{ id: `AUD-${Math.floor(Math.random() * 900) + 100}`, timestamp: new Date().toLocaleTimeString(), type: "System", event: `Failed to settle PAP debt for booking ${bookingId.substring(0,8)}: ${err.message}`, status: "Failed" }, ...logs]);
+            throw err;
+        }
+    };
+
     const toggleUserStatus = async (userId: string) => {
         try {
             await apiFetch(`/users/${userId}/toggle-status`, { method: "PATCH" });
@@ -1573,14 +1734,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     const handleRefundDispute = async (disputeId: string) => {
         try {
             await apiFetch(`/disputes/${disputeId}/refund`, { method: "POST" });
-            setDisputes(prev => prev.map(d => {
-                if (d.id === disputeId) {
-                    if (d.status !== "Pending") return d;
-                    setAudits(logs => [{ id: `AUD-${Math.floor(Math.random() * 900) + 100}`, timestamp: new Date().toLocaleTimeString(), type: "System", event: `Dispute ticket ${disputeId} resolved: Guest refunded for booking ${d.bookingId}.`, status: "Success" }, ...logs]);
-                    return { ...d, status: "Resolved-Refunded" as const };
-                }
-                return d;
-            }));
+            setAudits(logs => [{ id: `AUD-${Math.floor(Math.random() * 900) + 100}`, timestamp: new Date().toLocaleTimeString(), type: "System", event: `Dispute ticket ${disputeId} resolved: Guest refunded.`, status: "Success" }, ...logs]);
         } catch (err: any) {
             setAudits(logs => [{ id: `AUD-${Math.floor(Math.random() * 900) + 100}`, timestamp: new Date().toLocaleTimeString(), type: "System", event: `Dispute refund failed for ${disputeId}: ${err.message}`, status: "Failed" }, ...logs]);
         }
@@ -1589,14 +1743,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     const handleReleaseDispute = async (disputeId: string) => {
         try {
             await apiFetch(`/disputes/${disputeId}/release`, { method: "POST" });
-            setDisputes(prev => prev.map(d => {
-                if (d.id === disputeId) {
-                    if (d.status !== "Pending") return d;
-                    setAudits(logs => [{ id: `AUD-${Math.floor(Math.random() * 900) + 100}`, timestamp: new Date().toLocaleTimeString(), type: "System", event: `Dispute ticket ${disputeId} resolved: Payout funds released to Host (${d.hostName}) for booking ${d.bookingId}.`, status: "Success" }, ...logs]);
-                    return { ...d, status: "Resolved-PaidVendor" as const };
-                }
-                return d;
-            }));
+            setAudits(logs => [{ id: `AUD-${Math.floor(Math.random() * 900) + 100}`, timestamp: new Date().toLocaleTimeString(), type: "System", event: `Dispute ticket ${disputeId} resolved: Payout funds released to Host.`, status: "Success" }, ...logs]);
         } catch (err: any) {
             setAudits(logs => [{ id: `AUD-${Math.floor(Math.random() * 900) + 100}`, timestamp: new Date().toLocaleTimeString(), type: "System", event: `Dispute release failed for ${disputeId}: ${err.message}`, status: "Failed" }, ...logs]);
         }
@@ -1606,19 +1753,20 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         setUsers(prev => prev.map(u => u.name.toLowerCase() === hostName.toLowerCase() ? { ...u, status: "Blocked" as const } : u));
         setProperties(prev => prev.map(p => p.hostName.toLowerCase() === hostName.toLowerCase() ? { ...p, status: "Suspended" as const } : p));
         setAudits(logs => [{ id: `AUD-${Math.floor(Math.random() * 900) + 100}`, timestamp: new Date().toLocaleTimeString(), type: "Security", event: `Host account blocked & all listings suspended for: ${hostName} due to active arbitration violations.`, status: "Success" }, ...logs]);
-        setDisputes(prev => prev.map(d => d.hostName.toLowerCase() === hostName.toLowerCase() && d.status === "Pending" ? { ...d, status: "Resolved-Refunded" as const } : d));
+
     };
 
-    const handleSendMessage = (roomId: string, text: string, sender: "Guest" | "Host" | "Admin") => {
-        const newMessage: ChatMessage = { id: `msg-${Date.now()}`, sender, text, timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-        setChatRooms(prev => prev.map(room => room.id === roomId ? { ...room, lastMessage: text, messages: [...room.messages, newMessage] } : room));
-        setAudits(logs => [{ id: `AUD-${Math.floor(Math.random() * 900) + 100}`, timestamp: new Date().toLocaleTimeString(), type: "System", event: `Arbitration message dispatched to Support Channel ${roomId} by ${sender}.`, status: "Success" }, ...logs]);
-    };
-
-    const handleSimulateIncoming = (roomId: string, text: string, sender: "Guest" | "Host") => {
-        const newMessage: ChatMessage = { id: `msg-${Date.now()}`, sender, text, timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-        setChatRooms(prev => prev.map(room => room.id === roomId ? { ...room, lastMessage: text, unreadCount: room.unreadCount + 1, messages: [...room.messages, newMessage] } : room));
-        setAudits(logs => [{ id: `AUD-${Math.floor(Math.random() * 900) + 100}`, timestamp: new Date().toLocaleTimeString(), type: "Webhook", event: `WebSocket Frame Recv: support channel ${roomId} from ${sender}.`, status: "Success" }, ...logs]);
+    const handleSendMessage = async (roomId: string, text: string) => {
+        try {
+            await apiFetch(`/chats/${roomId}/messages`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text, type: "text" })
+            });
+            setAudits(logs => [{ id: `AUD-${Math.floor(Math.random() * 900) + 100}`, timestamp: new Date().toLocaleTimeString(), type: "System", event: `Admin dispatched message to Support Channel ${roomId}.`, status: "Success" }, ...logs]);
+        } catch (err) {
+            console.error("Failed to send message", err);
+        }
     };
 
     const handleSimulateLog = (type: "Webhook" | "SQS Queue" | "Security" | "System", event: string, status: "Success" | "Failed" | "Blocked") => {
@@ -1657,12 +1805,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
     // Computed
     const pendingApprovalsCount = applications.filter(app => app.status === "Pending").length;
-    const pendingDisputesCount = disputes.filter(d => d.status === "Pending").length;
+    const pendingTicketsCount = tickets.filter(t => t.status === "OPEN").length;
     const unreadChatsCount = chatRooms.reduce((sum, r) => sum + r.unreadCount, 0);
 
     const value: AdminContextType = {
         users, setUsers,
-        applications, setApplications, properties, setProperties, activities, setActivities, bookings, coupons, campaigns, templates, audits, setAudits, disputes, chatRooms,
+        applications, setApplications, properties, setProperties, activities, setActivities, bookings, coupons, campaigns, templates, audits, setAudits, tickets, chatRooms,
         dashboardStats, dashboardLoading, refreshDashboard,
         kycLoading, kycError, kycFilter, setKycFilter, refreshKycApplications,
         usersLoading, refreshUsers,
@@ -1670,12 +1818,16 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         activitiesLoading, refreshActivities,
         bookingsLoading, refreshBookings,
         couponsLoading, refreshCoupons,
+        chatsLoading, refreshChats,
         auditsLoading, refreshAudits,
-        disputesLoading, refreshDisputes,
+        ticketsLoading, refreshTickets,
         campaignsLoading, refreshCampaigns,
         templatesLoading, refreshTemplates,
         commissionSummary, hostBreakdown, payouts, financialsLoading, refreshFinancials,
+        isPayAtPropertyEnabled, setIsPayAtPropertyEnabled,
         commissionRate, setCommissionRate, gstRate, setGstRate, platformFeeRate, setPlatformFeeRate,
+        gstLuxuryRate, setGstLuxuryRate, gstLuxuryThreshold, setGstLuxuryThreshold,
+        tcsRate, setTcsRate, tdsRate, setTdsRate, platformGstRate, setPlatformGstRate,
         payoutMinThreshold, setPayoutMinThreshold, autoPayoutEnabled, setAutoPayoutEnabled,
         rateLimit, setRateLimit, rateLimitAuthMax, setRateLimitAuthMax,
         bookingExpiryMinutes, setBookingExpiryMinutes, maintenanceMode, setMaintenanceMode,
@@ -1708,10 +1860,10 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         handleApprove, handleReject, handleCreateCoupon, handleDeleteCoupon, handleLaunchCampaign,
         handleExecuteCampaign, handleCancelCampaign, handleDeleteCampaign,
         handleCreateTemplate, handleUpdateTemplate, handleDeleteTemplate,
-        triggerPayoutModal, executeManualPayout, closePayoutReceipt, toggleUserStatus, toggleListingStatus, handleAwardCoins,
+        triggerPayoutModal, executeManualPayout, closePayoutReceipt, settlePapDebt, toggleUserStatus, toggleListingStatus, handleAwardCoins,
         handleCancelAndRefundBooking, handleRefundDispute, handleReleaseDispute, handleBlockHost,
-        handleSendMessage, handleSimulateIncoming, handleSimulateLog, handleSaveListing, handleSaveUser,
-        pendingApprovalsCount, pendingDisputesCount, unreadChatsCount,
+        handleSendMessage, handleSimulateLog, handleSaveListing, handleSaveUser,
+        pendingApprovalsCount, pendingTicketsCount, unreadChatsCount,
     };
 
     return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;
