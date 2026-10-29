@@ -5,6 +5,7 @@ import {
     Calendar,
     Shield,
     Wallet,
+    Coins,
     Gift,
     ShieldBan,
     ShieldCheck,
@@ -121,9 +122,10 @@ export const UserDetailModule: React.FC<UserDetailModuleProps> = ({ setAudits })
     const [error, setError] = useState<string | null>(null);
     const [toggling, setToggling] = useState(false);
 
-    // Award coins inline state
+    // Issue credits inline state
     const [awardAmount, setAwardAmount] = useState(500);
     const [awardReason, setAwardReason] = useState("Sign-up Promotional Credit");
+    const [awardCategory, setAwardCategory] = useState<"PROMOTIONAL" | "REFERRAL" | "COMPENSATION" | "MANUAL_ADJUSTMENT">("PROMOTIONAL");
     const [awarding, setAwarding] = useState(false);
 
     // Delete confirmation state
@@ -228,7 +230,7 @@ export const UserDetailModule: React.FC<UserDetailModuleProps> = ({ setAudits })
                     "Content-Type": "application/json",
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 },
-                body: JSON.stringify({ amount: awardAmount, reason: awardReason }),
+                body: JSON.stringify({ amount: awardAmount, reason: awardReason, category: awardCategory }),
             });
             if (!res.ok) {
                 const body = await res.json().catch(() => ({}));
@@ -240,7 +242,7 @@ export const UserDetailModule: React.FC<UserDetailModuleProps> = ({ setAudits })
                     id: `audit-${Date.now()}`,
                     timestamp: new Date().toISOString(),
                     type: "Financial" as const,
-                    event: `Awarded ₹${awardAmount.toLocaleString("en-IN")} coins`,
+                    event: `Issued ₹${awardAmount.toLocaleString("en-IN")} TripTay Credits (${awardCategory})`,
                     status: "Success" as const,
                     detail: `${user.name} — ${awardReason}`,
                 },
@@ -249,6 +251,7 @@ export const UserDetailModule: React.FC<UserDetailModuleProps> = ({ setAudits })
 
             setAwardAmount(500);
             setAwardReason("Sign-up Promotional Credit");
+            setAwardCategory("PROMOTIONAL");
         } catch {
             setUser((prev) =>
                 prev ? { ...prev, walletBalance: prevBalance } : prev
@@ -524,15 +527,15 @@ export const UserDetailModule: React.FC<UserDetailModuleProps> = ({ setAudits })
 
                 {/* ── Right Column: Wallet + Bank ── */}
                 <div className="space-y-6">
-                    {/* Wallet Card */}
+                    {/* TripTay Credits Card */}
                     <div className="bg-white rounded-2xl border border-zinc-100 shadow-sm p-6 space-y-5">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-500">
-                                <Wallet className="w-5 h-5" />
+                            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600">
+                                <Coins className="w-5 h-5" />
                             </div>
                             <div>
-                                <h3 className="text-sm font-black text-zinc-900">Wallet Balance</h3>
-                                <p className="text-[10px] font-bold text-zinc-400">Redeemable coins</p>
+                                <h3 className="text-sm font-black text-zinc-900">TripTay Credits</h3>
+                                <p className="text-[10px] font-bold text-zinc-400">Available balance</p>
                             </div>
                         </div>
 
@@ -540,11 +543,28 @@ export const UserDetailModule: React.FC<UserDetailModuleProps> = ({ setAudits })
                             <p className="text-4xl font-black text-zinc-900">
                                 ₹{(user.walletBalance || 0).toLocaleString("en-IN")}
                             </p>
+                            <span className="inline-block mt-1 text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                                100% Usable on Stays
+                            </span>
                         </div>
 
-                        {/* Award Coins Form */}
+                        {/* Issue Credits Form */}
                         <form onSubmit={handleAwardCoins} className="space-y-3 pt-2 border-t border-zinc-50">
-                            <p className="text-[10px] font-black text-zinc-400 uppercase">Award Coins</p>
+                            <p className="text-[10px] font-black text-zinc-400 uppercase">Issue TripTay Credits</p>
+
+                            <div className="space-y-1.5">
+                                <label className="text-[9px] font-bold text-zinc-400">Category</label>
+                                <select
+                                    value={awardCategory}
+                                    onChange={(e) => setAwardCategory(e.target.value as any)}
+                                    className="w-full border border-zinc-100 bg-zinc-50 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-zinc-950 transition-colors"
+                                >
+                                    <option value="PROMOTIONAL">Promotional / Campaign Credits</option>
+                                    <option value="REFERRAL">Referral Reward Bonus</option>
+                                    <option value="COMPENSATION">Goodwill Compensation</option>
+                                    <option value="MANUAL_ADJUSTMENT">Admin Audit Adjustment</option>
+                                </select>
+                            </div>
 
                             <div className="space-y-1.5">
                                 <label className="text-[9px] font-bold text-zinc-400">Amount (₹)</label>
@@ -559,7 +579,7 @@ export const UserDetailModule: React.FC<UserDetailModuleProps> = ({ setAudits })
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className="text-[9px] font-bold text-zinc-400">Reason</label>
+                                <label className="text-[9px] font-bold text-zinc-400">Reason / Reference Note</label>
                                 <select
                                     value={awardReason}
                                     onChange={(e) => setAwardReason(e.target.value)}
@@ -575,14 +595,14 @@ export const UserDetailModule: React.FC<UserDetailModuleProps> = ({ setAudits })
                             <button
                                 type="submit"
                                 disabled={awarding || awardAmount <= 0}
-                                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-black tracking-tight transition-colors disabled:opacity-50"
+                                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black tracking-tight transition-colors disabled:opacity-50 shadow-md shadow-emerald-600/20"
                             >
                                 {awarding ? (
                                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                 ) : (
                                     <Gift className="w-3.5 h-3.5" />
                                 )}
-                                {awarding ? "Processing..." : `Credit ₹${awardAmount.toLocaleString("en-IN")}`}
+                                {awarding ? "Processing..." : `Issue ₹${awardAmount.toLocaleString("en-IN")} Credits`}
                             </button>
                         </form>
                     </div>

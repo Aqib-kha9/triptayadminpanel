@@ -30,7 +30,7 @@ interface SidebarProps {
 const NAV_ITEMS = [
   { id: "dashboard", label: "Operations Dashboard", icon: <LayoutDashboard className="w-4 h-4" />, path: "/" },
   { id: "approvals", label: "Host KYC Approvals", icon: <ShieldCheck className="w-4 h-4" />, path: "/approvals", badgeKey: "approvals" as const },
-  { id: "users", label: "Users & Wallet Coins", icon: <Users className="w-4 h-4" />, path: "/users" },
+  { id: "users", label: "Users & TripTay Credits", icon: <Users className="w-4 h-4" />, path: "/users" },
   { id: "stays", label: "Stays Management", icon: <Home className="w-4 h-4" />, path: "/stays" },
   { id: "activities", label: "Activities Management", icon: <Compass className="w-4 h-4" />, path: "/activities" },
   { id: "testimonials", label: "Testimonials", icon: <MessageSquare className="w-4 h-4" />, path: "/testimonials" },

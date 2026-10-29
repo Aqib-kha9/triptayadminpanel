@@ -159,15 +159,14 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-zinc-500">Wallet Balance (₹)</label>
-                <input
-                  type="number"
-                  required
-                  min="0"
-                  value={walletBalance}
-                  onChange={(e) => setWalletBalance(parseInt(e.target.value) || 0)}
-                  className="w-full bg-zinc-50 border border-zinc-100 rounded-xl px-4 py-2.5 text-xs font-bold text-zinc-700 focus:outline-none focus:ring-1 focus:ring-primary"
-                />
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-bold text-zinc-500">TripTay Credits</label>
+                  <span className="text-[8px] font-black uppercase tracking-wider text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">Audit Protected</span>
+                </div>
+                <div className="w-full bg-zinc-100 border border-zinc-200/80 rounded-xl px-4 py-2.5 text-xs font-black text-zinc-800 cursor-not-allowed">
+                  ₹{(walletBalance || 0).toLocaleString("en-IN")}
+                </div>
+                <p className="text-[9px] text-zinc-400 font-medium">Use "Issue Credits" action for categorized ledger adjustments.</p>
               </div>
             </div>
           </div>
